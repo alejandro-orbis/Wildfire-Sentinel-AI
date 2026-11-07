@@ -1,0 +1,1775 @@
+{
+  "name": "Wildfire Sentinel AI - 01 Core (Whatsapp)",
+  "nodes": [
+    {
+      "parameters": {
+        "schema": {
+          "__rl": true,
+          "mode": "list",
+          "value": "public"
+        },
+        "table": {
+          "__rl": true,
+          "value": "forest_incidents",
+          "mode": "name"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "incident_type": "={{ $json.payload.incident_type }}",
+            "metadata": "={{ $json.payload.metadata }}",
+            "case_id": "={{ $json.payload.case_id }}",
+            "assigned_to": "={{ $json.payload.assigned_to }}",
+            "ai_classification": "={{ $json.payload.ai_classification }}",
+            "longitude": "={{ $json.payload.longitude }}",
+            "latitude": "={{ $json.payload.latitude }}",
+            "reporter_phone": "={{ $json.payload.reporter_phone }}",
+            "reporter_name": "={{ $json.payload.reporter_name }}",
+            "priority": "={{ $json.payload.priority }}",
+            "description": "={{ $json.payload.description }}",
+            "parcela": "={{ $json.payload.parcela }}",
+            "location": "={{ $json.payload.location }}",
+            "status": "={{ $json.payload.status }}"
+          },
+          "matchingColumns": [
+            "id"
+          ],
+          "schema": [
+            {
+              "id": "id",
+              "displayName": "id",
+              "required": false,
+              "defaultMatch": true,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "created_at",
+              "displayName": "created_at",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "dateTime",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "incident_type",
+              "displayName": "incident_type",
+              "required": true,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "description",
+              "displayName": "description",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "priority",
+              "displayName": "priority",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "reporter_name",
+              "displayName": "reporter_name",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "reporter_phone",
+              "displayName": "reporter_phone",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "latitude",
+              "displayName": "latitude",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "number",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "longitude",
+              "displayName": "longitude",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "number",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "status",
+              "displayName": "status",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "ai_classification",
+              "displayName": "ai_classification",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "assigned_to",
+              "displayName": "assigned_to",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "metadata",
+              "displayName": "metadata",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "object",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "case_id",
+              "displayName": "case_id",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "parcela",
+              "displayName": "parcela",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "location",
+              "displayName": "location",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {
+          "outputColumns": [
+            "reporter_phone",
+            "status",
+            "case_id"
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.6,
+      "position": [
+        -4032,
+        3760
+      ],
+      "id": "d9ec0dc9-ada2-4210-99fc-50f323440305",
+      "name": "Guardar en forest_incidents",
+      "credentials": {
+        "postgres": {
+          "id": "",
+          "name": "Postgres - Wildfire Sentinel"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 3
+          },
+          "conditions": [
+            {
+              "id": "443ea944-b4be-49fd-aa6d-fd3957ab71d8",
+              "leftValue": "={{ $json.crearCaso }}",
+              "rightValue": "",
+              "operator": {
+                "type": "boolean",
+                "operation": "true",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.3,
+      "position": [
+        -5312,
+        3824
+      ],
+      "id": "4826cbdb-72c9-455b-9f3e-06b8c9240a33",
+      "name": "IF ¿Crear Caso?"
+    },
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.noOp",
+      "typeVersion": 1,
+      "position": [
+        -2848,
+        3360
+      ],
+      "id": "54daf846-9fdb-4369-9813-80a0555bad7e",
+      "name": "FIN"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 3
+          },
+          "conditions": [
+            {
+              "id": "9131b48d-a8c0-4544-b9bc-9c9cfab3d6c3",
+              "leftValue": "={{ $json.status === 'PENDIENTE_UBICACION' || $json.payload?.status === 'PENDIENTE_UBICACION' }}",
+              "rightValue": "true",
+              "operator": {
+                "type": "boolean",
+                "operation": "true",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.3,
+      "position": [
+        -3840,
+        3760
+      ],
+      "id": "144d39fe-4a69-4576-b775-78552bf9b457",
+      "name": "IF ¿Faltan Coordenadas?"
+    },
+    {
+      "parameters": {
+        "jsCode": "const i = $input.first().json;\n\nconst table = 'forest_incidents';\n\nconst lat =\n  i.lat_validada ??\n  i.lat ??\n  i.coordenadas?.lat ??\n  i.classification?.coordenadas?.lat ??\n  null;\n\nconst lon =\n  i.lon_validada ??\n  i.lon ??\n  i.coordenadas?.lon ??\n  i.classification?.coordenadas?.lon ??\n  null;\n\nconst payload = {\n  incident_type: i.tipo || 'INCENDIO',\n  description: i.descripcion || i.message || null,\n  priority: i.prioridad || 'ALTA',\n  reporter_name: i.userName || null,\n  reporter_phone: i.from || null,\n  latitude: lat,\n  longitude: lon,\n  parcela: i.parcela || null,\n  case_id: i.caseId || null,\n  status: i.necesita_coordenadas ? 'PENDIENTE_UBICACION' : 'ABIERTO',\n  ai_classification: i.tipo || 'INCENDIO',\n  assigned_to: 'Supervisor Forestal',\n  location: lat !== null && lon !== null\n    ? `SRID=4326;POINT(${lon} ${lat})`\n    : null,\n  metadata: {\n    mensaje_original: i.message || null,\n    subtipo:\n  i.subtipo && i.subtipo !== 'null'\n    ? i.subtipo\n    : i.classification?.subtipo && i.classification.subtipo !== 'null'\n      ? i.classification.subtipo\n      : null,\n    ubicacion_texto: i.ubicacion_texto || null,\n    ubicacion_nombre: i.ubicacion_nombre || null,\n    ubicacion_completa: i.ubicacion_completa || null,\n    ubicacion_municipio: i.ubicacion_municipio || null,\n    ubicacion_provincia: i.ubicacion_provincia || null,\n    media_id: i.mediaId || null,\n    media_type: i.mediaType || null,\n    caption: i.caption || null,\noriginal_message_type:\n  i.isImage\n    ? 'image'\n    : i.hasNativeLocation\n      ? 'location'\n      : 'text',\n    parcela: i.parcela || null,\n    requiere_escalado: i.requiereEscalado ?? false, // FIX: default conservador, antes era 'true' y generaba falsos escalados al supervisor cuando requiereEscalado venia undefined\n    channel: i.channel || 'whatsapp',\n    conversation_id: i.conversationId || null,\n    timestamp: i.timestamp || new Date().toISOString()\n  }\n};\n\n// Eliminar campos principales null o undefined\nObject.keys(payload).forEach(key => {\n  if (payload[key] === null || payload[key] === undefined) {\n    delete payload[key];\n  }\n});\n\n// Limpiar metadata\nObject.keys(payload.metadata).forEach(key => {\n  if (payload.metadata[key] === null || payload.metadata[key] === undefined) {\n    delete payload.metadata[key];\n  }\n});\n\nreturn [{\n  json: {\n    table,\n    payload,\n    original: {\n      ...i,\n      lat,\n      lon,\n      ubicacion_nombre: i.ubicacion_nombre,\n      ubicacion_completa: i.ubicacion_completa,\n      ubicacion_municipio: i.ubicacion_municipio,\n      ubicacion_provincia: i.ubicacion_provincia\n    },\n    _original_passthrough: {\n      ...i,\n      lat,\n      lon,\n      ubicacion_nombre: i.ubicacion_nombre,\n      ubicacion_completa: i.ubicacion_completa,\n      ubicacion_municipio: i.ubicacion_municipio,\n      ubicacion_provincia: i.ubicacion_provincia\n    }\n  }\n}];"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -4272,
+        3760
+      ],
+      "id": "29d48696-2f14-4e4a-8a54-f7279b96092b",
+      "name": "Preparar Registro"
+    },
+    {
+      "parameters": {
+        "jsCode": "const input = $input.first().json;\n\nconst original = $('Preparar Registro').first().json.original || {};\n\nconst finalMessage = `🔥 *Aviso de incendio forestal*\n\nNecesito la ubicación exacta para registrar el incidente y activar el seguimiento.\n\nPuedes enviarme:\n\n📍 Tu ubicación de WhatsApp\n🌍 Coordenadas (ej: 40.4168, -3.7038)\n🗺️ Nombre del monte, paraje o zona\n\nResponderé automáticamente cuando reciba la ubicación.`;\n\nreturn [{\n  json: {\n    ...original,\n    ...input,\n\n    finalMessage,\n    waitingForCoords: true,\n\n    whatsappTo: String(original.from || '').replace(/\\D/g, ''),\n    whatsappText: finalMessage\n  }\n}];"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -3408,
+        3664
+      ],
+      "id": "6a7f844b-bee7-4838-8aac-5903f1be9fdc",
+      "name": "Preparar Mensaje Pedir Coordenadas"
+    },
+    {
+      "parameters": {
+        "jsCode": "const saved = $input.first().json;\nconst metadata = saved.metadata || {};\n\nlet original = saved.original || saved._original_passthrough || null;\nif (!original) {\n  try {\n    original = $('Preparar Registro').first().json.original || {};\n  } catch (e) {\n    original = {};\n  }\n}\n\nconst from = original.from || saved.reporter_phone || metadata.telefono || '';\nconst userName = original.userName || saved.reporter_name || metadata.responsable || 'Usuario';\nconst tipo = original.tipo || saved.incident_type || metadata.tipo || 'No especificado';\nconst prioridad = original.prioridad || saved.priority || metadata.prioridad || 'No especificada';\nconst caseId = original.caseId || saved.case_id || metadata.case_id || 'No disponible';\nconst descripcion = original.descripcion || saved.description || metadata.descripcion || 'Sin descripción';\nconst lat = original.lat || saved.latitude || metadata.coordenadas_lat || null;\nconst lon = original.lon || saved.longitude || metadata.coordenadas_lon || null;\nconst requiereEscalado = original.requiereEscalado || metadata.requiere_escalado || false;\nconst finalMessage = original.finalMessage || 'Incidente registrado correctamente.';\n\n// La ubicación viene DIRECTAMENTE de original\nconst ubicacionNombre = original.ubicacion_nombre || null;\nconst ubicacionLegible = ubicacionNombre || (lat && lon ? `${lat}, ${lon}` : 'Sin coordenadas');\nconst supervisorNumber = $env.SUPERVISOR_WHATSAPP || '';\n\n// Mensaje para el USUARIO (con ID y ubicación)\nconst userMessage = `${finalMessage}\\n\\n📋 ID de registro: ${caseId}\\n\\n📍 *Ubicación:* ${ubicacionLegible}\\n\\n🌲 Gracias por proteger nuestros bosques.`;\n\n// Mensaje para el SUPERVISOR (con ID y ubicación legible)\nconst supervisorMessage = `🌲 *WILDFIRE SENTINEL AI*\\n━━━━━━━━━━━━━━━━━━━━\\n📌 *NUEVO CASO*\\n━━━━━━━━━━━━━━━━━━━━\\n🔹 *Tipo:* ${tipo}\\n🔹 *Prioridad:* ${prioridad}\\n🔹 *ID:* ${caseId}\\n🔹 *Ubicación:* ${ubicacionLegible}\\n🔹 *Reporta:* ${userName}\\n🔹 *Teléfono:* ${from}\\n━━━━━━━━━━━━━━━━━━━━\\n📝 *Descripción:*\\n${descripcion}\\n━━━━━━━━━━━━━━━━━━━━\\n⚠️ Se requiere atención inmediata.`;\n\nreturn [{\n  json: {\n    from: from,\n    reporter_phone: from,\n    userName: userName,\n    tipo: tipo,\n    prioridad: prioridad,\n    caseId: caseId,\n    descripcion: descripcion,\n    finalMessage: finalMessage,\n    requiereEscalado: requiereEscalado,\n    lat: lat,\n    lon: lon,\n    supabaseResponse: saved,\n    supervisorNumber: supervisorNumber,\n    supervisorMessage: supervisorMessage,\n    shouldNotifySupervisor:\n  (tipo === 'INCENDIO' && prioridad !== 'BAJA') || prioridad === 'ALTA',\n    userMessage: userMessage,\n    // Añadir ubicación para el siguiente nodo\n    ubicacion_nombre: ubicacionNombre\n  }\n}];"
+      },
+      "id": "99322353-e82c-4a97-899c-c02cd4096ed2",
+      "name": "Preparar Respuesta y Escalado",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -3632,
+        3888
+      ]
+    },
+    {
+      "parameters": {
+        "jsCode": "const i = $input.first().json;\n\nconst caseId =\n  i.caseId ||\n  i.pending_state?.pending_case_id ||\n  i.pending_case_id ||\n  'No disponible';\n\nconst lat = i.lat_validada;\nconst lon = i.lon_validada;\n\nconst ubicacion =\n  i.ubicacion_nombre ||\n  i.ubicacion_completa ||\n  `${lat}, ${lon}`;\n\nconst ubicacionCompleta = i.ubicacion_completa\n  ? `\\n📌 Dirección aprox.: ${i.ubicacion_completa}`\n  : '';\n\nconst message = `✅ Caso completado con coordenadas.\n\n📋 ID de registro: ${caseId}\n📍 Ubicación: ${ubicacion}${ubicacionCompleta}\n🧭 Coordenadas: ${lat}, ${lon}\n\n🌲 Gracias por proteger nuestros bosques.`;\n\nreturn [{\n  json: {\n    ...i,\n    whatsappTo: String(i.from || '').replace(/\\D/g, ''),\n    whatsappText: message,\n    finalMessage: message,\n    userMessage: message,\n    caso_completado: true,\n    caseId\n  }\n}];"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -4064,
+        3424
+      ],
+      "id": "fce60243-aff7-4f6e-a7a9-7832b157b85f",
+      "name": "Preparar Respuesta Coordenadas Actualizadas"
+    },
+    {
+      "parameters": {
+        "url": "={{ `https://maps.googleapis.com/maps/api/geocode/json?latlng=${$json.lat_validada},${$json.lon_validada}&key=${$env.GOOGLE_MAPS_API_KEY}&language=es` }}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.4,
+      "position": [
+        -4512,
+        3424
+      ],
+      "id": "3a129c7f-bdb2-4239-bbdd-8437b25e4887",
+      "name": "Geocoding API - Google Maps"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "=https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-lite:generateContent?key={{$env.GEMINI_API_KEY}}",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Content-Type",
+              "value": "application/json"
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={{\n{\n  contents: [\n    {\n      role: \"user\",\n      parts: [\n        {\n          text: `Eres un asistente IA para monitorización y gestión de avisos de incendios forestales. Clasifica el mensaje y extrae datos operativos. Responde SOLO JSON válido, sin markdown.\n\nTIPOS permitidos:\nINCENDIO, OTRO\n\nMENSAJE: ${$json.message}\nUSUARIO: ${$json.userName}\nCANAL: ${$json.channel}\nLATITUD RECIBIDA: ${$json.latitude}\nLONGITUD RECIBIDA: ${$json.longitude}\n\nReglas:\n- INCENDIO: humo, olor a quemado, fuego, llamas, conato, chispas, rayo, colilla, quema ilegal, barbacoa, maquinaria con chispas, cable eléctrico, foco térmico o riesgo razonable de incendio.\n- Si hay duda, clasifica como INCENDIO.\n- OTRO: saludos o mensajes sin relación con incendios.\n\nPrioridad:\nALTA: fuego visible, llamas, incendio declarado, conato activo, vegetación ardiendo, columna importante de humo, foco térmico confirmado, línea eléctrica con chispas.\nMEDIA: olor a quemado, humo leve o distante, rayo, colilla, quema ilegal, fogata, barbacoa, maquinaria con chispas.\nBAJA: mensajes casuales.\n\nDevuelve exactamente este JSON:\n{\n  \"tipo\": \"INCENDIO|OTRO\",\n  \"subtipo\": \"HUMO|FUEGO|RAYO|COLILLA|QUEMA_ILEGAL|BARBACOA|MAQUINARIA|LINEA_ELECTRICA|FOCO_TERMICO|OTRO_RIESGO|null\",\n  \"prioridad\": \"ALTA|MEDIA|BAJA\",\n  \"crear_caso\": true,\n  \"descripcion\": \"resumen breve\",\n  \"coordenadas\": {\"lat\": null, \"lon\": null},\n  \"ubicacion_texto\": null,\n  \"parcela\": null,\n  \"requiere_coordenadas\": false,\n  \"requiere_escalado\": false,\n  \"respuesta_usuario\": \"respuesta breve y profesional en español\"\n}`\n        }\n      ]\n    }\n  ],\n  generationConfig: {\n    temperature: 0.1,\n    maxOutputTokens: 512,\n    responseMimeType: \"application/json\"\n  }\n}\n}}",
+        "options": {
+          "timeout": 30000
+        }
+      },
+      "id": "51a09396-ad8a-4ec1-8b0c-d7d0c193bb36",
+      "name": "Gemini Clasificar Incidencia",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        -5952,
+        4016
+      ],
+      "retryOnFail": true,
+      "waitBetweenTries": 5000
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "=https://graph.facebook.com/v19.0/{{$env.WHATSAPP_PHONE_NUMBER_ID}}/messages",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Authorization",
+              "value": "={{'Bearer ' + $env.META_ACCESS_TOKEN}}"
+            },
+            {
+              "name": "Content-Type",
+              "value": "application/json"
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={{\nJSON.stringify({\n  messaging_product: \"whatsapp\",\n  recipient_type: \"individual\",\n  to: String($json.from || \"\"),\n  type: \"text\",\n  text: {\n    preview_url: false,\n    body: String($json.finalMessage || \"Estoy recibiendo muchos mensajes seguidos. Espera unos segundos y vuelve a intentarlo, por favor.\")\n  }\n})\n}}",
+        "options": {
+          "timeout": 30000
+        }
+      },
+      "id": "8a3247fb-d878-4f78-a89d-24ad69193208",
+      "name": "Enviar Rate Limit Usuario",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        -5952,
+        3856
+      ]
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "e7fe0d57-37d9-48fa-815d-1cd46a7d6810",
+              "leftValue": "={{ $json.rateLimited }}",
+              "rightValue": true,
+              "operator": {
+                "type": "boolean",
+                "operation": "equals"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "id": "c47beaee-1359-4288-be83-5783ff9fac18",
+      "name": "IF Rate Limited",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        -6144,
+        4000
+      ]
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "=https://graph.facebook.com/v19.0/{{$env.WHATSAPP_PHONE_NUMBER_ID}}/messages",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Authorization",
+              "value": "={{'Bearer ' + $env.META_ACCESS_TOKEN}}"
+            },
+            {
+              "name": "Content-Type",
+              "value": "application/json"
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={{\n  {\n    messaging_product: \"whatsapp\",\n    recipient_type: \"individual\",\n    to: String($json.supervisorNumber || \"\"),\n    type: \"text\",\n    text: {\n      preview_url: false,\n      body: String($json.supervisorMessage || \"\")\n    }\n  }\n}}",
+        "options": {
+          "timeout": 30000
+        }
+      },
+      "id": "bb97d0e6-8b30-44af-ba92-a1573f3b41ac",
+      "name": "Enviar WhatsApp Supervisor",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        -2272,
+        3136
+      ]
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "58e72343-3f40-4cb9-a134-3b543a671ea3",
+              "leftValue": "={{ $json.shouldNotifySupervisor }}",
+              "rightValue": true,
+              "operator": {
+                "type": "boolean",
+                "operation": "equals"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "id": "fdce0e09-2e27-4b50-9831-d283d02a5ff9",
+      "name": "IF Notificar Supervisor",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        -3424,
+        3888
+      ]
+    },
+    {
+      "parameters": {
+        "jsCode": "const inputData = $input.first().json;\n\n// 1. Teléfono\nlet phoneNumber =\n  inputData.whatsappTo ||\n  inputData.reporter_phone ||\n  inputData.from ||\n  inputData.telefono ||\n  inputData.metadata?.telefono ||\n  inputData.original?.from ||\n  inputData.supabaseResponse?.reporter_phone ||\n  null;\n\n// 2. Case ID\nconst caseId =\n  inputData.caseId ||\n  inputData.case_id ||\n  inputData.metadata?.case_id ||\n  inputData.supabaseResponse?.case_id ||\n  inputData.supabaseResponse?.id ||\n  null;\n\n// 3. Coordenadas\nconst lat =\n  inputData.lat_validada ??\n  inputData.lat ??\n  inputData.latitude ??\n  inputData.supabaseResponse?.latitude ??\n  null;\n\nconst lon =\n  inputData.lon_validada ??\n  inputData.lon ??\n  inputData.longitude ??\n  inputData.supabaseResponse?.longitude ??\n  null;\n\n// 4. Ubicación legible\nconst ubicacion =\n  inputData.ubicacion_nombre ||\n  inputData.ubicacion_municipio ||\n  inputData.ubicacion_provincia ||\n  inputData.ubicacion_completa ||\n  (lat && lon ? `${lat}, ${lon}` : 'Sin coordenadas');\n\nconst direccionAprox = inputData.ubicacion_completa\n  ? `\\n📌 Dirección aprox.: ${inputData.ubicacion_completa}`\n  : '';\n\nconst coordenadasTexto = lat && lon\n  ? `\\n🧭 Coordenadas: ${lat}, ${lon}`\n  : '';\n\n// 5. Detectar si es mensaje casual sin caso\nconst esSinCaso =\n  inputData.crearCaso === false ||\n  inputData.caseId === null ||\n  inputData.tipo === 'OTRO' && !caseId;\n\n// 6. Construir mensaje\nlet messageText;\n\nif (esSinCaso) {\n  messageText =\n    inputData.userMessage ||\n    inputData.finalMessage ||\n    inputData.classification?.respuesta_usuario ||\n    '¿Quieres reportar humo, fuego o una posible situación de riesgo de incendio forestal?';\n} else {\n  const intro =\n    inputData.finalMessage ||\n    inputData.userMessage ||\n    'Caso registrado correctamente.';\n\n  messageText = `${intro}\n\n📋 ID de registro: ${caseId || 'No disponible'}\n📍 Ubicación: ${ubicacion}${direccionAprox}${coordenadasTexto}\n\n🌲 Gracias por proteger nuestros bosques.`;\n}\n\n// 7. Fallback teléfono\nif (!phoneNumber) {\n  const str = JSON.stringify(inputData);\n  const match = str.match(/34\\d{9}/);\n  phoneNumber = match ? match[0] : null;\n}\n\nif (!phoneNumber) {\n  return [{\n    json: {\n      ...inputData,\n      whatsappSkipped: true,\n      skipReason: 'No phone number',\n      whatsappTo: '',\n      whatsappText: messageText\n    }\n  }];\n}\n\nconst cleanPhone = String(phoneNumber).replace(/\\D/g, '');\n\nreturn [{\n  json: {\n    ...inputData,\n    whatsappSkipped: false,\n    whatsappTo: cleanPhone,\n    whatsappText: messageText,\n    userMessage: messageText,\n    finalMessage: messageText\n  }\n}];"
+      },
+      "id": "72b33b2b-2b03-42b5-a873-a40cf549a90d",
+      "name": "Preparar Respuesta Usuario",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -2880,
+        3904
+      ]
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "=https://graph.facebook.com/v19.0/{{$env.WHATSAPP_PHONE_NUMBER_ID}}/messages",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Authorization",
+              "value": "={{'Bearer ' + $env.META_ACCESS_TOKEN}}"
+            },
+            {
+              "name": "Content-Type",
+              "value": "application/json"
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={{\nJSON.stringify({\n  messaging_product: \"whatsapp\",\n  recipient_type: \"individual\",\n  to: String($json.whatsappTo || \"\"),\n  type: \"text\",\n  text: {\n    preview_url: false,\n    body: String($json.whatsappText || \"Incidente registrado correctamente.\")\n  }\n})\n}}",
+        "options": {
+          "timeout": 30000
+        }
+      },
+      "id": "aa4bb2bd-cb63-4b2f-b82f-e07e54568587",
+      "name": "Enviar WhatsApp Usuario",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        -2448,
+        3776
+      ]
+    },
+    {
+      "parameters": {
+        "jsCode": "const i = $('Validar Coordenadas').first().json;\nconst geoResponse = $input.first().json;\n\nlet ubicacionNombre = null;\nlet ubicacionCompleta = null;\nlet municipio = null;\nlet provincia = null;\n\nif (geoResponse.status === \"OK\" && geoResponse.results && geoResponse.results.length > 0) {\n  const firstResult = geoResponse.results[0];\n  ubicacionCompleta = firstResult.formatted_address;\n\n  // Extraer componentes de dirección\n  for (const component of firstResult.address_components) {\n    if (component.types.includes(\"locality\")) {\n      municipio = component.long_name;\n    }\n    if (component.types.includes(\"administrative_area_level_1\")) {\n      provincia = component.long_name;\n    }\n  }\n\n  // Definir nombre a mostrar\n  if (municipio) {\n    ubicacionNombre = municipio;\n  } else if (provincia) {\n    ubicacionNombre = provincia;\n  } else {\n    ubicacionNombre = ubicacionCompleta.split(',')[0];\n  }\n\n  // Si hay parcela, priorizarla\n  if (i.parcela) {\n    ubicacionNombre = `Parcela ${i.parcela} (${municipio || provincia || 'Ubicación detectada'})`;\n  }\n} else {\n  // Fallback: usar coordenadas\n  ubicacionNombre = `${i.lat_validada}, ${i.lon_validada}`;\n  ubicacionCompleta = null;\n}\n\nreturn [{\n  json: {\n    ...i,\n    ubicacion_nombre: ubicacionNombre,\n    ubicacion_completa: ubicacionCompleta,\n    ubicacion_municipio: municipio,\n    ubicacion_provincia: provincia,\n    geocoding_status: geoResponse.status\n  }\n}];"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -4480,
+        3632
+      ],
+      "id": "ce3eddc7-8922-48d4-8e0b-9ea93660fde3",
+      "name": "Procesar Geocoding Response"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 3
+          },
+          "conditions": [
+            {
+              "id": "cb4f6ce4-6abe-498d-9053-cb223ca3703b",
+              "leftValue": "={{ $json.coords_validas }}",
+              "rightValue": "true",
+              "operator": {
+                "type": "boolean",
+                "operation": "true",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.3,
+      "position": [
+        -4896,
+        3744
+      ],
+      "id": "fd16fa73-1f8b-4a26-9a0b-87379c1322f1",
+      "name": "IF ¿Hay coordenadas válidas?"
+    },
+    {
+      "parameters": {
+        "jsCode": "const input = $input.first().json;\nconst body = input.body || input;\n\nconst value = body.entry?.[0]?.changes?.[0]?.value;\n\nif (value?.statuses && !value?.messages) return [];\n\nconst msg = value?.messages?.[0];\nconst contact = value?.contacts?.[0];\n\nif (!msg) return [];\n\nlet message = '';\nlet mediaId = '';\nlet mediaType = '';\nlet latitude = null;\nlet longitude = null;\nlet caption = '';\n\nif (msg.type === 'text') {\n  message = msg.text?.body || '';\n\n} else if (msg.type === 'location') {\n  latitude = msg.location?.latitude ?? null;\n  longitude = msg.location?.longitude ?? null;\n  mediaType = 'location';\n  message = `ubicacion: ${latitude}, ${longitude}`;\n\n} else if (msg.type === 'image') {\n  mediaId = msg.image?.id || '';\n  mediaType = 'image';\n  caption = msg.image?.caption || '';\n  message = caption || '[imagen recibida]';\n\n} else if (msg.type === 'document') {\n  mediaId = msg.document?.id || '';\n  mediaType = 'document';\n  caption = msg.document?.caption || '';\n  message = caption || msg.document?.filename || '[documento recibido]';\n\n} else if (msg.type === 'interactive') {\n  message =\n    msg.interactive?.button_reply?.title ||\n    msg.interactive?.button_reply?.id ||\n    msg.interactive?.list_reply?.title ||\n    msg.interactive?.list_reply?.id ||\n    '';\n\n} else {\n  mediaType = msg.type || 'archivo';\n  message = `[${msg.type || 'archivo'} recibido]`;\n}\n\nconst from = String(msg.from || '').replace(/\\D/g, '');\nconst userName = contact?.profile?.name || 'Usuario Forestal';\nconst conversationId = `whatsapp:${from}`;\nconst incomingMessageId =\n  msg.id ||\n  `${conversationId}:${message}:${Math.floor(Date.now() / 5000)}`;\n\ntry {\n  const staticData = $getWorkflowStaticData('global');\n  staticData.processedMessages = staticData.processedMessages || {};\n\n  if (staticData.processedMessages[incomingMessageId]) return [];\n\n  staticData.processedMessages[incomingMessageId] = new Date().toISOString();\n\n  const ids = Object.keys(staticData.processedMessages);\n  if (ids.length > 1000) {\n    for (const id of ids.slice(0, ids.length - 1000)) {\n      delete staticData.processedMessages[id];\n    }\n  }\n} catch (e) {}\n\nif (!message || !from) return [];\n\nreturn [{\n  json: {\n    channel: 'whatsapp',\n    from,\n    userName,\n    message: String(message).trim(),\n    caption: String(caption || '').trim(),\n\n    conversationId,\n    incomingMessageId,\n\n    mediaId,\n    mediaType,\n\n    isImage: mediaType === 'image',\n    hasMedia: !!mediaId,\n    hasNativeLocation: latitude !== null && longitude !== null,\n    hasText: !!String(message || '').trim() && message !== '[imagen recibida]',\n\n    latitude,\n    longitude,\n\n    timestamp: new Date().toISOString(),\n    raw: body\n  }\n}];"
+      },
+      "id": "a6154352-3dee-494b-82c2-171296d8368e",
+      "name": "Parsear WhatsApp",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -7600,
+        3632
+      ]
+    },
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "omnichannel-webhook",
+        "options": {}
+      },
+      "id": "b46427a5-025d-4808-9f30-319c4a5fd4b1",
+      "name": "Webhook WhatsApp Forestal",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2,
+      "position": [
+        -7824,
+        3632
+      ],
+      "webhookId": "eb93a2c0-1d45-4a2b-90f5-400206e3ad93"
+    },
+    {
+      "parameters": {
+        "jsCode": "const original = $('Rate Limiter').first().json;\nconst rows = $input.all().map(item => item.json);\n\nconst row = rows.find(r => r.pending_case_id);\n\nreturn [{\n  json: {\n    ...original,\n\n    has_pending: !!row,\n\n    caseId: row?.pending_case_id || null,\n    pending_case_id: row?.pending_case_id || null,\n    pending_type: row?.pending_type || null,\n    pending_priority: row?.pending_priority || null,\n\n    is_pending_coords_message:\n      !!row &&\n      (\n        original.latitude !== null ||\n        /-?\\d+(\\.\\d+)?[, ]+-?\\d+(\\.\\d+)?/.test(original.message)\n      )\n  }\n}];"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -6768,
+        3760
+      ],
+      "id": "11e70d18-b956-4e60-98b6-4a539c05bd29",
+      "name": "Depurar Estado Pendiente"
+    },
+    {
+      "parameters": {
+        "jsCode": "const input = $input.first().json;\nconst now = Date.now();\nconst WINDOW_MS = 60000;\nconst MAX_MESSAGES = Number($env.RATE_LIMIT_PER_MINUTE || 15);\ntry {\n  const staticData = $getWorkflowStaticData('global');\n  staticData.rateLimiter = staticData.rateLimiter || {};\n  const key = `rate:${input.conversationId}`;\n  const item = staticData.rateLimiter[key] || { timestamps: [] };\n  item.timestamps = (item.timestamps || []).filter(t => now - t < WINDOW_MS);\n  if (item.timestamps.length >= MAX_MESSAGES) {\n    staticData.rateLimiter[key] = item;\n    return [{json:{...input, rateLimited:true, finalMessage:'Estoy recibiendo muchos mensajes seguidos. Espera unos segundos y vuelve a intentarlo, por favor.'}}];\n  }\n  item.timestamps.push(now);\n  staticData.rateLimiter[key] = item;\n} catch(e) {}\nreturn [{json:{...input, rateLimited:false}}];"
+      },
+      "id": "f86943a0-1946-498a-b79f-4d5c79b2366a",
+      "name": "Rate Limiter",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -7200,
+        3760
+      ]
+    },
+    {
+      "parameters": {
+        "operation": "executeQuery",
+        "query": "SELECT \n  cs.pending_case_id,\n  fi.incident_type AS pending_type,\n  fi.priority AS pending_priority\nFROM conversation_state cs\nLEFT JOIN forest_incidents fi ON fi.case_id = cs.pending_case_id\nWHERE cs.user_phone='{{$json.from}}'\nLIMIT 1;",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.6,
+      "position": [
+        -6976,
+        3760
+      ],
+      "id": "16125481-8005-49bf-83df-eee1d76fb687",
+      "name": "PostgreSQL: Leer estado",
+      "alwaysOutputData": true,
+      "credentials": {
+        "postgres": {
+          "id": "",
+          "name": "Postgres - Wildfire Sentinel"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 3
+          },
+          "conditions": [
+            {
+              "id": "35d82500-a17e-403e-bbb8-1193794132e7",
+              "leftValue": "={{ \n  $json.has_pending === true &&\n  (\n    $json.pending_reply_type === 'coords' ||\n    $json.pending_reply_type === 'place_text'\n  )\n}}",
+              "rightValue": "",
+              "operator": {
+                "type": "boolean",
+                "operation": "true",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.3,
+      "position": [
+        -6368,
+        3760
+      ],
+      "id": "6a391214-6d99-4ffe-8d05-9ea531fd67d7",
+      "name": "IF ¿Hay estado pendiente?"
+    },
+    {
+      "parameters": {
+        "jsCode": "const i = $input.first().json;\nconst texto = String(i.message || '').trim();\n\n// Si llega ubicacion nativa de WhatsApp, tiene prioridad sobre el texto\nif (i.latitude !== null && i.latitude !== undefined && i.longitude !== null && i.longitude !== undefined) {\n  return [{\n    json: {\n      ...i,\n      location_input_type: 'coords',\n      lat_validada: i.latitude,\n      lon_validada: i.longitude,\n      coords_validas: true,\n      caseId: i.caseId || i.pending_case_id,\n      tipo: i.pending_type || 'INCENDIO',\n      prioridad: i.pending_priority || 'MEDIA'\n    }\n  }];\n}\n\nconst coordMatch = texto.match(/(-?\\d+(?:\\.\\d+)?)\\s*,\\s*(-?\\d+(?:\\.\\d+)?)/);\n\nif (coordMatch) {\n  const lat = parseFloat(coordMatch[1]);\n  const lon = parseFloat(coordMatch[2]);\n\n  // Validar rango coordenadas\n  if (Number.isNaN(lat) || Number.isNaN(lon) || Math.abs(lat) > 90 || Math.abs(lon) > 180) {\n    return [{\n      json: {\n        ...i,\n        location_input_type: 'invalid',\n        coords_validas: false,\n        whatsappTo: String(i.from || '').replace(/\\D/g, ''),\n        whatsappText: 'Las coordenadas no parecen válidas. La latitud debe estar entre -90 y 90, y la longitud entre -180 y 180.'\n      }\n    }];\n  }\n\n  return [{\n    json: {\n      ...i,\n      location_input_type: 'coords',\n      lat_validada: lat,\n      lon_validada: lon,\n      coords_validas: true,\n      caseId: i.caseId || i.pending_case_id,\n      tipo: i.pending_type || 'INCENDIO',\n      prioridad: i.pending_priority || 'MEDIA'\n    }\n  }];\n}\n\n// FIX (nueva funcionalidad): si no son coordenadas ni ubicacion nativa,\n// tratamos el texto como nombre de lugar/camino/monte y lo geocodificamos\n// por texto en el siguiente nodo (Geocoding por texto).\nif (texto.length === 0) {\n  return [{\n    json: {\n      ...i,\n      location_input_type: 'invalid',\n      coords_validas: false,\n      whatsappTo: String(i.from || '').replace(/\\D/g, ''),\n      whatsappText: 'No he podido leer tu mensaje. Puedes enviarme tu ubicación de WhatsApp, el nombre del lugar/camino/monte, o coordenadas en formato: 40.4168, -3.7038'\n    }\n  }];\n}\n\nreturn [{\n  json: {\n    ...i,\n    location_input_type: 'text',\n    ubicacion_texto: texto,\n    coords_validas: false,\n    caseId: i.caseId || i.pending_case_id,\n    tipo: i.pending_type || 'INCENDIO',\n    prioridad: i.pending_priority || 'MEDIA'\n  }\n}];"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -5648,
+        3488
+      ],
+      "id": "65d4aa7e-1d03-4601-8471-e374a929e8ac",
+      "name": "Extraer Coordenadas Pendientes"
+    },
+    {
+      "parameters": {
+        "jsCode": "const i = $input.first().json;\n\nconst caseId =\n  i.pending_state?.pending_case_id ||\n  i.caseId ||\n  i.pending_case_id ||\n  null;\n\nif (!caseId) {\n  throw new Error('No se encontró caseId para actualizar el caso pendiente.');\n}\n\nconst lat = i.lat_validada;\nconst lon = i.lon_validada;\n\nif (lat === null || lat === undefined || lon === null || lon === undefined) {\n  throw new Error('No hay coordenadas válidas para actualizar el caso.');\n}\n\nconst query = `\nUPDATE forest_incidents\nSET\n  latitude = ${lat},\n  longitude = ${lon},\n  location = ST_SetSRID(ST_MakePoint(${lon}, ${lat}), 4326),\n  status = 'ABIERTO',\n  metadata = COALESCE(metadata, '{}'::jsonb) || jsonb_build_object(\n    'coordenadas_actualizadas_en', NOW(),\n    'coordenadas_fuente', 'usuario_whatsapp'\n  )\nWHERE case_id = '${caseId}';\n`;\n\nreturn [{\n  json: {\n    ...i,\n    caseId,\n    updateQuery: query\n  }\n}];"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -5152,
+        3424
+      ],
+      "id": "bacffd14-82d0-4645-8d25-c39d991fefb0",
+      "name": "Construir SQL Actualizar Caso"
+    },
+    {
+      "parameters": {
+        "operation": "executeQuery",
+        "query": "{{$json.updateQuery}}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.6,
+      "position": [
+        -4928,
+        3424
+      ],
+      "id": "0edf16da-fe87-4635-a662-bee5e6549061",
+      "name": "PostgreSQL: Actualizar caso",
+      "credentials": {
+        "postgres": {
+          "id": "",
+          "name": "Postgres - Wildfire Sentinel"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "const i = $('Extraer Coordenadas Pendientes').first().json;\nconst geoResponse = $input.first().json;\n\nlet ubicacionNombre = null;\nlet ubicacionCompleta = null;\nlet municipio = null;\nlet provincia = null;\nlet lat = null;\nlet lon = null;\nlet locationFound = false;\n\nif (geoResponse.status === \"OK\" && geoResponse.results && geoResponse.results.length > 0) {\n  const firstResult = geoResponse.results[0];\n\n  ubicacionCompleta = firstResult.formatted_address;\n  lat = firstResult.geometry?.location?.lat ?? null;\n  lon = firstResult.geometry?.location?.lng ?? null;\n  locationFound = lat !== null && lon !== null;\n\n  for (const component of firstResult.address_components || []) {\n    if (component.types.includes(\"locality\")) {\n      municipio = component.long_name;\n    }\n    if (component.types.includes(\"administrative_area_level_1\")) {\n      provincia = component.long_name;\n    }\n  }\n\n  if (municipio) {\n    ubicacionNombre = municipio;\n  } else if (provincia) {\n    ubicacionNombre = provincia;\n  } else {\n    ubicacionNombre = ubicacionCompleta?.split(',')[0] || 'Ubicación detectada';\n  }\n\n  if (i.parcela) {\n    ubicacionNombre = `Parcela ${i.parcela} (${municipio || provincia || 'Ubicación detectada'})`;\n  }\n\n} else {\n  ubicacionNombre = i.ubicacion_texto || 'Ubicación no encontrada';\n  ubicacionCompleta = null;\n}\n\nreturn [{\n  json: {\n    ...i,\n\n    location_found: locationFound,\n    coords_validas: locationFound,\n\n    lat_validada: lat,\n    lon_validada: lon,\n\n    ubicacion_nombre: ubicacionNombre,\n    ubicacion_completa: ubicacionCompleta,\n    ubicacion_municipio: municipio,\n    ubicacion_provincia: provincia,\n    geocoding_status: geoResponse.status,\n\n    caseId: i.caseId || i.pending_state?.pending_case_id || i.pending_case_id\n  }\n}];"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -4288,
+        3424
+      ],
+      "id": "3b05c29b-e425-4198-862f-a0260ee65486",
+      "name": "Procesar Geocoding Coordenadas Pendientes"
+    },
+    {
+      "parameters": {
+        "operation": "executeQuery",
+        "query": "\tDELETE FROM conversation_state WHERE user_phone = '{{$json.from}}'",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.6,
+      "position": [
+        -3280,
+        3328
+      ],
+      "id": "4bc6dcea-6233-48eb-84be-cd44489ebdbc",
+      "name": "PostgreSQL: Limpiar estado",
+      "credentials": {
+        "postgres": {
+          "id": "",
+          "name": "Postgres - Wildfire Sentinel"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 3
+          },
+          "conditions": [
+            {
+              "id": "e9fcc7d4-8523-46aa-9628-76d06bf3a64b",
+              "leftValue": "={{ $json.shouldNotifySupervisor }}",
+              "rightValue": "",
+              "operator": {
+                "type": "boolean",
+                "operation": "true",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.3,
+      "position": [
+        -3120,
+        3136
+      ],
+      "id": "0690bde7-9b02-448b-abea-7aa9c493c200",
+      "name": "IF Escalar Caso Actualizado"
+    },
+    {
+      "parameters": {
+        "jsCode": "const i = $input.first().json;\n\nconst message =\n  i.finalMessage ||\n  i.classification?.respuesta_usuario ||\n  'Puedo ayudarte a reportar humo, fuego o una posible situación de riesgo de incendio forestal.';\n\nreturn [{\n  json: {\n    ...i,\n    whatsappTo: String(i.from || '').replace(/\\D/g, ''),\n    whatsappText: message,\n    finalMessage: message,\n    userMessage: message\n  }\n}];"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -4336,
+        4000
+      ],
+      "id": "b61b5cc4-0969-40bf-8275-fedeeb3cbe87",
+      "name": "Preparar Respuesta No Incendio"
+    },
+    {
+      "parameters": {
+        "jsCode": "// Si ya fue procesado por la rama legal, salir\nif ($input.first().json.procesado_legal === true) {\n  return [];\n}\n\nconst input = $input.first().json;\nconst original = $('Rate Limiter').first().json;\n\nconst text = input.candidates?.[0]?.content?.parts?.[0]?.text || '';\n\nlet data = {};\ntry {\n  const clean = text.replace(/```json/gi, '').replace(/```/g, '').trim();\n  const match = clean.match(/\\{[\\s\\S]*\\}/);\n  data = JSON.parse(match ? match[0] : clean);\n} catch (e) {\n  data = {\n    tipo: 'OTRO',\n    prioridad: 'BAJA',\n    crear_caso: false,\n    descripcion: original.message,\n    coordenadas: {\n      lat: original.latitude,\n      lon: original.longitude\n    },\n    requiere_foto: false,\n    requiere_coordenadas: false,\n    requiere_escalado: false,\n    respuesta_usuario: 'He recibido tu mensaje, pero necesito más detalles para clasificarlo correctamente.'\n  };\n}\n\nconst tiposValidos = ['INCENDIO', 'OTRO'];\nif (!tiposValidos.includes(data.tipo)) {\n  data.tipo = 'OTRO';\n}\nif (!['ALTA', 'MEDIA', 'BAJA'].includes(data.prioridad)) {\n  data.prioridad = 'MEDIA';\n}\n\n// Si WhatsApp recibió ubicación nativa, tiene prioridad sobre Gemini\nif (original.latitude !== null && original.longitude !== null) {\n  data.coordenadas = {\n    lat: original.latitude,\n    lon: original.longitude\n  };\n}\n\nconst lat = data.coordenadas?.lat ?? null;\nconst lon = data.coordenadas?.lon ?? null;\n\n// Crear caso\nlet crearCaso = data.crear_caso !== false;\n\n// FIX: declarar finalMessage AQUI, antes de cualquier uso, para evitar\n// \"Cannot access 'finalMessage' before initialization\"\nlet finalMessage =\n  data.respuesta_usuario ||\n  'He registrado tu mensaje.';\n\n// Seguridad extra: saludos/casuales no crean caso aunque Gemini falle\nconst mensajeLimpio = String(original.message || '').trim().toLowerCase();\nconst soloCoordenadas =\n  /^-?\\d+(\\.\\d+)?\\s*,\\s*-?\\d+(\\.\\d+)?$/.test(mensajeLimpio);\n\nif (soloCoordenadas && original.has_pending !== true) {\n  crearCaso = false;\n  data.tipo = 'OTRO';\n  data.prioridad = 'BAJA';\n  data.requiere_escalado = false;\n  finalMessage = 'He recibido unas coordenadas, pero no tengo ningún aviso pendiente asociado. Para reportar un incendio, escribe primero qué está ocurriendo: humo, fuego, olor a quemado o riesgo de incendio.';\n}\n\nconst mensajesCasuales = [\n  'hola', 'buenas', 'buenos dias', 'buenos días',\n  'buenas tardes', 'buenas noches', 'gracias',\n  'ok', 'vale', 'perfecto', 'adios', 'adiós'\n];\n\nif (data.tipo === 'OTRO' && mensajesCasuales.includes(mensajeLimpio)) {\n  crearCaso = false;\n  data.prioridad = 'BAJA';\n  data.requiere_foto = false;\n  data.requiere_coordenadas = false;\n  data.requiere_escalado = false;\n}\n\n// Coordenadas necesarias\nconst needsCoords =\n  crearCaso === true &&\n  ['INCENDIO'].includes(data.tipo) &&\n  (lat === null || lon === null);\n\nconst requiereEscalado =\n  crearCaso === true &&\n  (\n    data.requiere_escalado === true ||\n    data.prioridad === 'ALTA'\n  );\n\nif (needsCoords) {\n  finalMessage = `He clasificado tu aviso como *${data.tipo}*.\n\nPara registrarlo correctamente necesito la ubicación exacta. Puedes enviarme la ubicación de WhatsApp o escribir las coordenadas en formato: 40.4168, -3.7038`;\n}\n\nreturn [{\n  json: {\n    ...original,\n    classification: data,\n    tipo: data.tipo,\n    prioridad: data.prioridad,\n    crearCaso,\n    descripcion: data.descripcion || original.message,\n    lat,\n    lon,\n    ubicacion_texto: data.ubicacion_texto || null,\n    parcela: data.parcela || null,\n    necesita_coordenadas: needsCoords,\n    requiereEscalado,\n    finalMessage,\n    caseId: crearCaso\n      ? `FOR-${Date.now()}-${Math.random().toString(36).slice(2, 7).toUpperCase()}`\n      : null\n  }\n}];"
+      },
+      "id": "42926f1f-e52e-4de6-b463-b2a5baefbe17",
+      "name": "Procesar Clasificación",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -5744,
+        4016
+      ]
+    },
+    {
+      "parameters": {
+        "url": "=https://maps.googleapis.com/maps/api/geocode/json?latlng={{$json.lat_validada}},{{$json.lon_validada}}&key={{$env.GOOGLE_MAPS_API_KEY}}&language=es",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.4,
+      "position": [
+        -4704,
+        3632
+      ],
+      "id": "fc607e5c-a59e-44a4-b5e8-9601855e977a",
+      "name": "Geocoding API - Google Maps1"
+    },
+    {
+      "parameters": {
+        "jsCode": "const i = $input.first().json;\n\n// Función para validar coordenadas\nfunction validarCoordenadas(lat, lon) {\n  const latNum = parseFloat(lat);\n  const lonNum = parseFloat(lon);\n\n  if (Number.isNaN(latNum) || Number.isNaN(lonNum)) {\n    return {\n      valida: false,\n      lat: null,\n      lon: null,\n      error: 'No son números'\n    };\n  }\n\n  if (Math.abs(latNum) > 90) {\n    return {\n      valida: false,\n      lat: null,\n      lon: null,\n      error: 'Latitud fuera de rango (-90 a 90)'\n    };\n  }\n\n  if (Math.abs(lonNum) > 180) {\n    return {\n      valida: false,\n      lat: null,\n      lon: null,\n      error: 'Longitud fuera de rango (-180 a 180)'\n    };\n  }\n\n  return {\n    valida: true,\n    lat: latNum,\n    lon: lonNum,\n    error: null\n  };\n}\n\n// Obtener coordenadas de diferentes fuentes\nlet lat =\n  i.lat ??\n  i.coordenadas?.lat ??\n  i.classification?.coordenadas?.lat ??\n  null;\n\nlet lon =\n  i.lon ??\n  i.coordenadas?.lon ??\n  i.classification?.coordenadas?.lon ??\n  null;\n\n// Si no hay coordenadas en el objeto principal, buscar en metadata\nif ((lat === null || lon === null) && i.metadata) {\n  lat = lat ?? i.metadata.coordenadas_lat ?? null;\n  lon = lon ?? i.metadata.coordenadas_lon ?? null;\n}\n\nconst coords = validarCoordenadas(lat, lon);\n\n// En esta versión simplificada, solo INCENDIO requiere coordenadas\nconst necesitaCoordenadas =\n  i.tipo === 'INCENDIO' &&\n  !coords.valida;\n\n// Mensaje para pedir coordenadas si es necesario\nlet mensajePedirCoordenadas = '';\n\nif (necesitaCoordenadas) {\n  mensajePedirCoordenadas = `Para registrar correctamente el aviso de incendio, necesito la ubicación exacta.\n\nPuedes enviarme:\n• Tu ubicación de WhatsApp\n• Coordenadas (ej: 40.4168, -3.7038)\n• Nombre del monte, paraje o zona`;\n}\n\nreturn [\n  {\n    json: {\n      ...i,\n\n      lat_validada: coords.lat,\n      lon_validada: coords.lon,\n      coords_validas: coords.valida,\n      error_coordenadas: coords.error,\n\n      necesita_coordenadas: necesitaCoordenadas,\n      mensaje_pedir_coordenadas: mensajePedirCoordenadas\n    }\n  }\n];"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -5088,
+        3744
+      ],
+      "id": "545afde1-c7d4-43d1-aa85-1b01eeabbbf2",
+      "name": "Validar Coordenadas"
+    },
+    {
+      "parameters": {
+        "operation": "executeQuery",
+        "query": "INSERT INTO conversation_state (\n  user_phone,\n  pending_case_id\n)\nVALUES (\n  '{{ $(\"Preparar Registro\").first().json.original.from }}',\n  '{{ $(\"Preparar Registro\").first().json.original.caseId }}'\n)\n\nON CONFLICT (user_phone)\nDO UPDATE SET\n  pending_case_id='{{ $(\"Preparar Registro\").first().json.original.caseId }}',\n  updated_at=NOW();",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.6,
+      "position": [
+        -3632,
+        3664
+      ],
+      "id": "4efc8c94-f16f-47f9-8021-cbf2f7b694bc",
+      "name": "Guardar Estado Pendiente",
+      "alwaysOutputData": true,
+      "credentials": {
+        "postgres": {
+          "id": "",
+          "name": "Postgres - Wildfire Sentinel"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "const i = $input.first().json;\n\nconst tipo =\n  i.tipo ||\n  i.pending_type ||\n  i.pending_state?.pending_type ||\n  'OTRO';\n\nconst prioridad =\n  i.prioridad ||\n  i.pending_priority ||\n  (tipo === 'INCENDIO' ? 'ALTA' : 'MEDIA');\n\nconst shouldNotifySupervisor =\n  tipo === 'INCENDIO' ||\n  prioridad === 'ALTA';\n\nconst supervisorNumber =\n  $env.SUPERVISOR_WHATSAPP || '';\n\nconst ubicacion =\n  i.ubicacion_nombre ||\n  i.ubicacion_completa ||\n  `${i.lat_validada}, ${i.lon_validada}`;\n\nconst supervisorMessage = `🔥 *WILDFIRE SENTINEL AI*\n━━━━━━━━━━━━━━━━━━━━\n📌 *CASO ACTUALIZADO*\n━━━━━━━━━━━━━━━━━━━━\n🔹 *Tipo:* ${tipo}\n🔹 *Prioridad:* ${prioridad}\n🔹 *ID:* ${i.caseId}\n🔹 *Ubicación:* ${ubicacion}\n🔹 *Coordenadas:* ${i.lat_validada}, ${i.lon_validada}\n🔹 *Reporta:* ${i.userName || 'Usuario'}\n🔹 *Teléfono:* ${i.from}\n━━━━━━━━━━━━━━━━━━━━\n⚠️ El usuario ha enviado la ubicación pendiente.`;\n\nreturn [{\n  json: {\n    ...i,\n    supervisorNumber,\n    supervisorMessage,\n    shouldNotifySupervisor\n  }\n}];"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -3312,
+        3136
+      ],
+      "id": "c98f8601-0e93-4cf0-896a-d44e025dff2a",
+      "name": "Preparar Alerta Supervisor Coordenadas"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 3
+          },
+          "conditions": [
+            {
+              "id": "f1e2d3c4-0000-4000-8000-000000000001",
+              "leftValue": "={{ $json.location_input_type === 'coords' }}",
+              "rightValue": "",
+              "operator": {
+                "type": "boolean",
+                "operation": "true",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.3,
+      "position": [
+        -5456,
+        3488
+      ],
+      "id": "2edce025-0d3f-4ef1-ad00-735f6cc993ae",
+      "name": "IF ¿Ubicación es coordenadas?"
+    },
+    {
+      "parameters": {
+        "url": "=https://maps.googleapis.com/maps/api/geocode/json?address={{encodeURIComponent($json.ubicacion_texto + ', España')}}&key={{$env.GOOGLE_MAPS_API_KEY}}&language=es",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.4,
+      "position": [
+        -5152,
+        3216
+      ],
+      "id": "2eb016d6-731c-4860-9fa4-c86a6dc680f9",
+      "name": "Geocoding por texto"
+    },
+    {
+      "parameters": {
+        "jsCode": "const i = $('Extraer Coordenadas Pendientes').first().json;\nconst geo = $input.first().json;\n\nif (geo.status !== 'OK' || !geo.results?.length) {\n  // No se pudo localizar el texto: pedimos ubicacion nativa o coordenadas\n  return [{\n    json: {\n      ...i,\n      location_not_found: true,\n      coords_validas: false,\n      whatsappTo: String(i.from || '').replace(/\\D/g, ''),\n      whatsappText: 'No he podido localizar ese lugar. Por favor, envíame tu ubicación de WhatsApp (📍) o unas coordenadas aproximadas (ej: 40.4168, -3.7038).'\n    }\n  }];\n}\n\nconst result = geo.results[0];\nconst lat = result.geometry.location.lat;\nconst lon = result.geometry.location.lng;\n\nreturn [{\n  json: {\n    ...i,\n    lat_validada: lat,\n    lon_validada: lon,\n    coords_validas: true,\n    ubicacion_nombre: result.formatted_address,\n    ubicacion_completa: result.formatted_address,\n    geocoding_status: geo.status\n  }\n}];"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -4928,
+        3216
+      ],
+      "id": "c4dc07bc-cd7d-426d-8037-691278d33952",
+      "name": "Procesar Geocoding por Texto"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 3
+          },
+          "conditions": [
+            {
+              "id": "f1e2d3c4-0000-4000-8000-000000000005",
+              "leftValue": "={{ $json.coords_validas === true }}",
+              "rightValue": "",
+              "operator": {
+                "type": "boolean",
+                "operation": "true",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.3,
+      "position": [
+        -4752,
+        3216
+      ],
+      "id": "b92c29f9-44cb-4a95-b210-f7a005477076",
+      "name": "IF ¿Lugar Encontrado?"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 3
+          },
+          "conditions": [
+            {
+              "id": "de05261c-9877-4d25-b522-d9ef2f01a79c",
+              "leftValue": "={{ $json.isImage === true && !!$json.mediaId }}",
+              "rightValue": "",
+              "operator": {
+                "type": "boolean",
+                "operation": "true",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.3,
+      "position": [
+        -7408,
+        3632
+      ],
+      "id": "f4ad0640-74ac-4113-9fe5-952ab89bef84",
+      "name": "IF ¿Es imagen?"
+    },
+    {
+      "parameters": {
+        "url": "=https://graph.facebook.com/v19.0/{{$json.mediaId}}",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Authorization",
+              "value": "=Bearer {{$env.META_ACCESS_TOKEN}}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.4,
+      "position": [
+        -7200,
+        3536
+      ],
+      "id": "750167fe-93d2-4552-8982-085d8a69c988",
+      "name": "Obtener URL media"
+    },
+    {
+      "parameters": {
+        "url": "={{$json.url}}",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Authorization",
+              "value": "=Bearer {{$env.META_ACCESS_TOKEN}}"
+            }
+          ]
+        },
+        "options": {
+          "response": {
+            "response": {
+              "responseFormat": "file"
+            }
+          }
+        }
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.4,
+      "position": [
+        -6992,
+        3536
+      ],
+      "id": "72bcb7cf-9129-4eb5-ac7f-aac4ad7ab1c9",
+      "name": "Descargar imagen"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "=https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-lite:generateContent?key={{$env.GEMINI_API_KEY}}",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Content-Type",
+              "value": "application/json"
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={{ \nJSON.stringify({\n  contents: [\n    {\n      role: \"user\",\n      parts: [\n        {\n          text: `Analiza esta imagen como posible aviso de incendio forestal.\n\nDevuelve SOLO JSON válido, sin markdown:\n\n{\n  \"hay_humo\": true,\n  \"hay_fuego\": true,\n  \"es_incendio_forestal_probable\": true,\n  \"prioridad\": \"ALTA|MEDIA|BAJA\",\n  \"descripcion\": \"resumen breve\",\n  \"ubicacion_texto\": null,\n  \"hay_viviendas_cerca\": true,\n  \"hay_carretera\": true,\n  \"tamano_incendio\": \"PEQUEÑO|MEDIO|GRANDE|DESCONOCIDO\",\n  \"requiere_escalado\": true\n}\n\nReglas:\n- ALTA si hay fuego visible, humo denso, incendio grande, viviendas cerca, carretera cerca o riesgo para personas.\n- MEDIA si solo hay humo lejano o señal dudosa.\n- BAJA solo si claramente no parece incendio.\n- No inventes coordenadas.\n- Si reconoces un lugar, carretera, pueblo o señal, ponlo en ubicacion_texto.\n`\n        },\n        {\n          inline_data: {\n            mime_type: $json.image_mime_type || \"image/jpeg\",\n            data: $json.image_base64\n          }\n        }\n      ]\n    }\n  ],\n  generationConfig: {\n    temperature: 0.1,\n    maxOutputTokens: 512,\n    responseMimeType: \"application/json\"\n  }\n})\n}}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.4,
+      "position": [
+        -6576,
+        3536
+      ],
+      "id": "8a088ae9-141a-4ed8-a7ab-4d55f7fc0c3c",
+      "name": "Gemini Vision"
+    },
+    {
+      "parameters": {
+        "jsCode": "const original = $('Preparar Imagen Base64').first().json;\nconst input = $input.first().json;\n\nconst text = input.candidates?.[0]?.content?.parts?.[0]?.text || '';\n\nlet vision = {};\ntry {\n  const clean = text.replace(/```json/gi, '').replace(/```/g, '').trim();\n  const match = clean.match(/\\{[\\s\\S]*\\}/);\n  vision = JSON.parse(match ? match[0] : clean);\n} catch (e) {\n  vision = {};\n}\n\nconst hayFuego = vision.hay_fuego === true;\nconst hayHumo = vision.hay_humo === true;\nconst viviendasCerca = vision.hay_viviendas_cerca === true;\nconst incendioGrande = vision.tamano_incendio === 'GRANDE';\n\nconst prioridad =\n  vision.prioridad === 'ALTA' ||\n  hayFuego ||\n  viviendasCerca ||\n  incendioGrande\n    ? 'ALTA'\n    : vision.prioridad === 'BAJA'\n      ? 'BAJA'\n      : 'MEDIA';\n\nconst requiereEscalado =\n  prioridad === 'ALTA' || vision.requiere_escalado === true;\n\nconst caseId =\n  `FOR-${Date.now()}-${Math.random().toString(36).slice(2, 7).toUpperCase()}`;\n\nreturn [{\n  json: {\n    ...original,\n\n    vision_result: vision,\n\n    classification: {\n      tipo: 'INCENDIO',\n      subtipo: hayFuego ? 'FUEGO' : 'FOCO_TERMICO',\n      prioridad,\n      crear_caso: true,\n      descripcion:\n        vision.descripcion ||\n        original.caption ||\n        'Imagen recibida con posible humo o incendio forestal.',\n      coordenadas: {\n        lat: original.latitude,\n        lon: original.longitude\n      },\n      ubicacion_texto: vision.ubicacion_texto || original.caption || null,\n      requiere_coordenadas:\n        original.latitude === null || original.longitude === null,\n      requiere_escalado: requiereEscalado,\n      respuesta_usuario: 'He recibido la imagen del posible incendio.'\n    },\n\n    tipo: 'INCENDIO',\n    prioridad,\n    crearCaso: true,\n\n    descripcion:\n      vision.descripcion ||\n      original.caption ||\n      'Imagen recibida con posible humo o incendio forestal.',\n\n    lat: original.latitude,\n    lon: original.longitude,\n\n    ubicacion_texto: vision.ubicacion_texto || original.caption || null,\n    parcela: null,\n\n    necesita_coordenadas:\n      original.latitude === null || original.longitude === null,\n\n    requiereEscalado,\n\n    finalMessage:\n      original.latitude !== null && original.longitude !== null\n        ? 'He recibido la imagen y la ubicación del posible incendio.'\n        : `🔥 *Aviso de incendio forestal*\n\nHe recibido la imagen y la he analizado como posible incendio.\n\nPara registrarlo correctamente necesito la ubicación exacta.\n\nPuedes enviarme:\n\n📍 Tu ubicación de WhatsApp\n🗺️ Nombre del monte, camino o zona\n🌍 Coordenadas aproximadas`,\n\n    caseId\n  }\n}];"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -6368,
+        3536
+      ],
+      "id": "8ba9c0f4-72c2-4562-968a-97e6543609d4",
+      "name": "Preparar Resultado Imagen"
+    },
+    {
+      "parameters": {
+        "jsCode": "const i = $input.first().json;\nconst text = String(i.message || '').trim().toLowerCase();\n\nconst esUbicacionWhatsApp =\n  i.latitude !== null && i.latitude !== undefined &&\n  i.longitude !== null && i.longitude !== undefined;\n\nconst pareceCoordenadas =\n  /^-?\\d+(\\.\\d+)?\\s*,\\s*-?\\d+(\\.\\d+)?$/.test(text);\n\nconst tienePalabrasIncendio =\n  /\\b(humo|fuego|incendio|llamas|arde|ardiendo|quemado|quemando|conato|explosión|explosion|chispa|chispas|barbacoa|fogata|rayo|colilla|olor a quemado|huele a quemado)\\b/.test(text);\n\nconst pareceLugarTexto =\n  !tienePalabrasIncendio &&\n  !pareceCoordenadas &&\n  text.length >= 3;\n\nreturn [{\n  json: {\n    ...i,\n    pending_reply_type:\n      esUbicacionWhatsApp || pareceCoordenadas\n        ? 'coords'\n        : pareceLugarTexto\n          ? 'place_text'\n          : 'new_report'\n  }\n}];"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -6560,
+        3760
+      ],
+      "id": "784afc07-0a52-45a5-b74c-36619d8252c3",
+      "name": "Detectar Tipo Respuesta Pendiente"
+    },
+    {
+      "parameters": {
+        "jsCode": "const original = $('Construir SQL Actualizar Caso').first().json;\nconst pgResult = $input.first().json;\n\nreturn [{\n  json: {\n    ...original,\n    postgres_update_result: pgResult\n  }\n}];"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -4720,
+        3424
+      ],
+      "id": "f1ff170d-3d06-4c86-9bb7-51cd7db63428",
+      "name": "Restaurar contexto tras actualizar caso"
+    },
+    {
+      "parameters": {
+        "jsCode": "const original = $('Parsear WhatsApp').first().json;\n\nconst item = $input.first();\nconst binary = item.binary || {};\nconst binaryKey = Object.keys(binary)[0];\n\nif (!binaryKey) {\n  throw new Error('No se encontró imagen binaria descargada.');\n}\n\nconst imageInfo = binary[binaryKey];\n\nconst buffer = await this.helpers.getBinaryDataBuffer(0, binaryKey);\nconst base64 = buffer.toString('base64');\n\nreturn [{\n  json: {\n    ...original,\n    image_base64: base64,\n    image_mime_type: imageInfo.mimeType || 'image/jpeg'\n  }\n}];"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -6784,
+        3536
+      ],
+      "id": "c82ae9c9-c50a-4a14-bcf5-d4f71b57ecf5",
+      "name": "Preparar Imagen Base64"
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Guardar en forest_incidents": {
+      "main": [
+        [
+          {
+            "node": "IF ¿Faltan Coordenadas?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "IF ¿Crear Caso?": {
+      "main": [
+        [
+          {
+            "node": "Validar Coordenadas",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Preparar Respuesta No Incendio",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "IF ¿Faltan Coordenadas?": {
+      "main": [
+        [
+          {
+            "node": "Guardar Estado Pendiente",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Preparar Respuesta y Escalado",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Preparar Registro": {
+      "main": [
+        [
+          {
+            "node": "Guardar en forest_incidents",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Preparar Mensaje Pedir Coordenadas": {
+      "main": [
+        [
+          {
+            "node": "Enviar WhatsApp Usuario",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Preparar Respuesta y Escalado": {
+      "main": [
+        [
+          {
+            "node": "IF Notificar Supervisor",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Preparar Respuesta Coordenadas Actualizadas": {
+      "main": [
+        [
+          {
+            "node": "PostgreSQL: Limpiar estado",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Preparar Alerta Supervisor Coordenadas",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Enviar WhatsApp Usuario",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Geocoding API - Google Maps": {
+      "main": [
+        [
+          {
+            "node": "Procesar Geocoding Coordenadas Pendientes",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Gemini Clasificar Incidencia": {
+      "main": [
+        [
+          {
+            "node": "Procesar Clasificación",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "IF Rate Limited": {
+      "main": [
+        [
+          {
+            "node": "Enviar Rate Limit Usuario",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Gemini Clasificar Incidencia",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "IF Notificar Supervisor": {
+      "main": [
+        [
+          {
+            "node": "Enviar WhatsApp Supervisor",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Preparar Respuesta Usuario",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Preparar Respuesta Usuario",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Preparar Respuesta Usuario": {
+      "main": [
+        [
+          {
+            "node": "Enviar WhatsApp Usuario",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Procesar Geocoding Response": {
+      "main": [
+        [
+          {
+            "node": "Preparar Registro",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "IF ¿Hay coordenadas válidas?": {
+      "main": [
+        [
+          {
+            "node": "Geocoding API - Google Maps1",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Preparar Registro",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Parsear WhatsApp": {
+      "main": [
+        [
+          {
+            "node": "IF ¿Es imagen?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Webhook WhatsApp Forestal": {
+      "main": [
+        [
+          {
+            "node": "Parsear WhatsApp",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Depurar Estado Pendiente": {
+      "main": [
+        [
+          {
+            "node": "Detectar Tipo Respuesta Pendiente",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Rate Limiter": {
+      "main": [
+        [
+          {
+            "node": "PostgreSQL: Leer estado",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "PostgreSQL: Leer estado": {
+      "main": [
+        [
+          {
+            "node": "Depurar Estado Pendiente",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "IF ¿Hay estado pendiente?": {
+      "main": [
+        [
+          {
+            "node": "Extraer Coordenadas Pendientes",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "IF Rate Limited",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Extraer Coordenadas Pendientes": {
+      "main": [
+        [
+          {
+            "node": "IF ¿Ubicación es coordenadas?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Construir SQL Actualizar Caso": {
+      "main": [
+        [
+          {
+            "node": "PostgreSQL: Actualizar caso",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "PostgreSQL: Actualizar caso": {
+      "main": [
+        [
+          {
+            "node": "Restaurar contexto tras actualizar caso",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Procesar Geocoding Coordenadas Pendientes": {
+      "main": [
+        [
+          {
+            "node": "Preparar Respuesta Coordenadas Actualizadas",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "IF Escalar Caso Actualizado": {
+      "main": [
+        [
+          {
+            "node": "Enviar WhatsApp Supervisor",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "FIN",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Preparar Respuesta No Incendio": {
+      "main": [
+        [
+          {
+            "node": "Enviar WhatsApp Usuario",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Procesar Clasificación": {
+      "main": [
+        [
+          {
+            "node": "IF ¿Crear Caso?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Geocoding API - Google Maps1": {
+      "main": [
+        [
+          {
+            "node": "Procesar Geocoding Response",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Validar Coordenadas": {
+      "main": [
+        [
+          {
+            "node": "IF ¿Hay coordenadas válidas?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Guardar Estado Pendiente": {
+      "main": [
+        [
+          {
+            "node": "Preparar Mensaje Pedir Coordenadas",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Preparar Alerta Supervisor Coordenadas": {
+      "main": [
+        [
+          {
+            "node": "IF Escalar Caso Actualizado",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "IF ¿Ubicación es coordenadas?": {
+      "main": [
+        [
+          {
+            "node": "Construir SQL Actualizar Caso",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Geocoding por texto",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Geocoding por texto": {
+      "main": [
+        [
+          {
+            "node": "Procesar Geocoding por Texto",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Procesar Geocoding por Texto": {
+      "main": [
+        [
+          {
+            "node": "IF ¿Lugar Encontrado?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "IF ¿Lugar Encontrado?": {
+      "main": [
+        [
+          {
+            "node": "Construir SQL Actualizar Caso",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Enviar WhatsApp Usuario",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "IF ¿Es imagen?": {
+      "main": [
+        [
+          {
+            "node": "Obtener URL media",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Rate Limiter",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Obtener URL media": {
+      "main": [
+        [
+          {
+            "node": "Descargar imagen",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Descargar imagen": {
+      "main": [
+        [
+          {
+            "node": "Preparar Imagen Base64",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Gemini Vision": {
+      "main": [
+        [
+          {
+            "node": "Preparar Resultado Imagen",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Preparar Resultado Imagen": {
+      "main": [
+        [
+          {
+            "node": "IF ¿Crear Caso?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Detectar Tipo Respuesta Pendiente": {
+      "main": [
+        [
+          {
+            "node": "IF ¿Hay estado pendiente?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Restaurar contexto tras actualizar caso": {
+      "main": [
+        [
+          {
+            "node": "Geocoding API - Google Maps",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Preparar Imagen Base64": {
+      "main": [
+        [
+          {
+            "node": "Gemini Vision",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate",
+    "timeSavedMode": "fixed",
+    "timezone": "Europe/Madrid",
+    "callerPolicy": "workflowsFromSameOwner",
+    "availableInMCP": false
+  },
+  "meta": {
+    "templateCredsSetupCompleted": false
+  },
+  "tags": []
+}
