@@ -46,7 +46,7 @@
           "conditions": [
             {
               "id": "alert-check",
-              "leftValue": "={{ $json.fire_risk === \"ALTO\" || $json.fire_risk === \"EXTREMO\" }}",
+              "leftValue": "={{ $json.alert_sent === true }}",
               "rightValue": true,
               "operator": {
                 "type": "boolean",
@@ -60,24 +60,24 @@
         "options": {}
       },
       "id": "f33704ac-2759-4eec-a421-8727a773ad26",
-      "name": "¿Riesgo Alto o Extremo?",
+      "name": "¿Enviar alerta?",
       "type": "n8n-nodes-base.if",
       "typeVersion": 2.2,
       "position": [
-        -224,
+        -48,
         128
       ]
     },
     {
       "parameters": {
-        "jsCode": "const risk = $input.first().json;\n\nconst rawBrigadistas = $env.BRIGADISTAS_WHATSAPP || '[]';\n\nlet brigadistas;\ntry {\n  brigadistas = JSON.parse(rawBrigadistas);\n} catch (error) {\n  throw new Error(`BRIGADISTAS_WHATSAPP no es JSON válido: ${rawBrigadistas}`);\n}\n\nif (!Array.isArray(brigadistas) || brigadistas.length === 0) {\n  throw new Error(`No hay brigadistas configurados. Valor recibido: ${rawBrigadistas}`);\n}\n\nconst riskEmoji = {\n  EXTREMO: '🔴🔴🔴',\n  ALTO: '🟠🟠'\n}[risk.risk_level] || '⚠️';\n\nconst mensaje = `${riskEmoji} *ALERTA FORESTAL* ${riskEmoji}\\n\\n` +\n  `📍 *Zona:* ${risk.zone_name || 'No especificada'}\\n` +\n  `🔥 *Riesgo:* ${risk.risk_level || 'No especificado'} (${risk.risk_score || 0} pts)\\n` +\n  `━━━━━━━━━━━━━━━━━━━━\\n` +\n  `🌡️ *Temperatura:* ${risk.temperature || 'N/D'}°C\\n` +\n  `💧 *Humedad:* ${risk.humidity || 'N/D'}%\\n` +\n  `💨 *Viento:* ${Math.round(Number(risk.wind_speed || 0))} km/h\\n` +\n  `━━━━━━━━━━━━━━━━━━━━\\n` +\n  `⚠️ *Recomendación:*\\n` +\n  `• Extremar precaución\\n` +\n  `• Prohibir quemas\\n` +\n  `• Activar vigilancia\\n\\n` +\n  `📅 ${risk.timestamp ? new Date(risk.timestamp).toLocaleString('es-ES') : new Date().toLocaleString('es-ES')}`;\n\nreturn brigadistas.map(telefono => ({\n  json: {\n    to: String(telefono).replace(/\\D/g, ''),\n    message: mensaje,\n    risk_data: risk\n  }\n}));"
+        "jsCode": "const risk = $('Calcular Riesgo').first().json;\n\nconst rawBrigadistas = $env.BRIGADISTAS_WHATSAPP || '[]';\n\nlet brigadistas;\ntry {\n  brigadistas = JSON.parse(rawBrigadistas);\n} catch (error) {\n  throw new Error(`BRIGADISTAS_WHATSAPP no es JSON válido: ${rawBrigadistas}`);\n}\n\nif (!Array.isArray(brigadistas) || brigadistas.length === 0) {\n  throw new Error(`No hay brigadistas configurados. Valor recibido: ${rawBrigadistas}`);\n}\n\nconst riskEmoji = {\n  EXTREMO: '🔴🔴🔴',\n  ALTO: '🟠🟠'\n}[risk.risk_level] || '⚠️';\n\nconst mensaje = `${riskEmoji} *ALERTA FORESTAL* ${riskEmoji}\\n\\n` +\n  `📍 *Zona:* ${risk.zone_name || 'No especificada'}\\n` +\n  `🔥 *Riesgo:* ${risk.risk_level || 'No especificado'} (${risk.risk_score || 0} pts)\\n` +\n  `━━━━━━━━━━━━━━━━━━━━\\n` +\n  `🌡️ *Temperatura:* ${risk.temperature || 'N/D'}°C\\n` +\n  `💧 *Humedad:* ${risk.humidity || 'N/D'}%\\n` +\n  `💨 *Viento:* ${Math.round(Number(risk.wind_speed || 0))} km/h\\n` +\n  `━━━━━━━━━━━━━━━━━━━━\\n` +\n  `⚠️ *Recomendación:*\\n` +\n  `• Extremar precaución\\n` +\n  `• Prohibir quemas\\n` +\n  `• Activar vigilancia\\n\\n` +\n  `📅 ${risk.timestamp ? new Date(risk.timestamp).toLocaleString('es-ES') : new Date().toLocaleString('es-ES')}`;\n\nreturn brigadistas.map(telefono => ({\n  json: {\n    to: String(telefono).replace(/\\D/g, ''),\n    message: mensaje,\n    risk_data: risk\n  }\n}));"
       },
       "id": "7bf7544f-c25b-467b-8636-327d41c53ab5",
       "name": "Preparar Mensajes Brigadistas",
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
       "position": [
-        0,
+        176,
         0
       ]
     },
@@ -110,7 +110,7 @@
       "type": "n8n-nodes-base.httpRequest",
       "typeVersion": 4.2,
       "position": [
-        224,
+        400,
         0
       ]
     },
@@ -234,7 +234,7 @@
       "type": "n8n-nodes-base.postgres",
       "typeVersion": 2.6,
       "position": [
-        -432,
+        -256,
         128
       ],
       "credentials": {
@@ -271,7 +271,7 @@
       "type": "n8n-nodes-base.noOp",
       "typeVersion": 1,
       "position": [
-        -16,
+        176,
         224
       ],
       "id": "708bd49f-66f5-4239-8eff-6d8c417d8c28",
@@ -279,16 +279,40 @@
     },
     {
       "parameters": {
-        "jsCode": "const input = $input.first().json;\n\n// Guardar en fire_alerts\nconst alertRecord = {\n  table: 'fire_alerts',\n  payload: {\n    zone_name: input.zone_name,\n    temperature: input.temperature,\n    humidity: input.humidity,\n    wind_speed: input.wind_speed,\n    fire_risk: input.risk_level,\n    alert_sent: input.requires_alert || false,\n    requires_alert: input.requires_alert || false,\n    metadata: {\n      risk_score: input.risk_score,\n      raw_data: input.full_data,\n      triggered_at: input.timestamp\n    }\n  }\n};\n\nreturn [{ json: alertRecord }];"
+        "jsCode": "const input = $('Calcular Riesgo').first().json;\nconst last = $input.first().json || {};\n\n// FIX v2.1: cooldown de alertas.\n// Se avisa solo si el nivel requiere alerta y:\n//  - no hay alertas previas para la zona, o\n//  - el nivel ha subido respecto a la última alerta enviada, o\n//  - han pasado ALERT_COOLDOWN_HOURS desde la última alerta.\nconst RANK = { BAJO: 0, MODERADO: 1, ALTO: 2, EXTREMO: 3 };\nconst COOLDOWN_HOURS = Number($env.ALERT_COOLDOWN_HOURS || 12);\n\nconst lastRisk = last.fire_risk || null;\nconst lastAt = last.created_at ? new Date(last.created_at) : null;\nconst hoursSinceLast = lastAt ? (Date.now() - lastAt.getTime()) / 36e5 : null;\n\nlet alertReason = null;\nif (input.requires_alert) {\n  if (!lastRisk) alertReason = 'primera_alerta';\n  else if (RANK[input.risk_level] > RANK[lastRisk]) alertReason = 'nivel_sube';\n  else if (hoursSinceLast >= COOLDOWN_HOURS) alertReason = 'cooldown_cumplido';\n}\nconst sendAlert = alertReason !== null;\n\nconst alertRecord = {\n  table: 'fire_alerts',\n  payload: {\n    zone_name: input.zone_name,\n    temperature: input.temperature,\n    humidity: input.humidity,\n    wind_speed: input.wind_speed,\n    fire_risk: input.risk_level,\n    alert_sent: sendAlert,\n    requires_alert: input.requires_alert || false,\n    metadata: {\n      risk_score: input.risk_score,\n      alert_reason: alertReason,\n      last_alert_risk: lastRisk,\n      hours_since_last_alert: hoursSinceLast !== null ? Math.round(hoursSinceLast * 10) / 10 : null,\n      raw_data: input.full_data,\n      triggered_at: input.timestamp\n    }\n  }\n};\n\nreturn [{ json: alertRecord }];"
       },
       "id": "68bbc857-fffe-40d2-a55b-c09a77ad1f17",
       "name": "Guardar en PostgreSQL",
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
       "position": [
-        -672,
+        -464,
         128
       ]
+    },
+    {
+      "parameters": {
+        "operation": "executeQuery",
+        "query": "SELECT fire_risk, created_at\nFROM fire_alerts\nWHERE zone_name = $1\n  AND alert_sent = true\nORDER BY created_at DESC\nLIMIT 1;",
+        "options": {
+          "queryReplacement": "={{ $json.zone_name }}"
+        }
+      },
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.6,
+      "position": [
+        -672,
+        128
+      ],
+      "id": "e771e4c9-ad52-495a-adab-b845714e461b",
+      "name": "Leer última alerta enviada",
+      "alwaysOutputData": true,
+      "credentials": {
+        "postgres": {
+          "id": "",
+          "name": "Postgres - Wildfire Sentinel"
+        }
+      }
     }
   ],
   "pinData": {},
@@ -308,25 +332,7 @@
       "main": [
         [
           {
-            "node": "Guardar en PostgreSQL",
-            "type": "main",
-            "index": 0
-          }
-        ]
-      ]
-    },
-    "¿Riesgo Alto o Extremo?": {
-      "main": [
-        [
-          {
-            "node": "Preparar Mensajes Brigadistas",
-            "type": "main",
-            "index": 0
-          }
-        ],
-        [
-          {
-            "node": "FIN",
+            "node": "Leer última alerta enviada",
             "type": "main",
             "index": 0
           }
@@ -348,7 +354,7 @@
       "main": [
         [
           {
-            "node": "¿Riesgo Alto o Extremo?",
+            "node": "¿Enviar alerta?",
             "type": "main",
             "index": 0
           }
@@ -371,6 +377,35 @@
         [
           {
             "node": "Insertar en fire_alerts",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Leer última alerta enviada": {
+      "main": [
+        [
+          {
+            "node": "Guardar en PostgreSQL",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "¿Enviar alerta?": {
+      "main": [
+        [
+          {
+            "node": "Preparar Mensajes Brigadistas",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "FIN",
             "type": "main",
             "index": 0
           }

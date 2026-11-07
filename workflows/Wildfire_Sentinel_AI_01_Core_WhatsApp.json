@@ -396,7 +396,8 @@
         4016
       ],
       "retryOnFail": true,
-      "waitBetweenTries": 5000
+      "waitBetweenTries": 5000,
+      "onError": "continueRegularOutput"
     },
     {
       "parameters": {
@@ -681,8 +682,10 @@
     {
       "parameters": {
         "operation": "executeQuery",
-        "query": "SELECT \n  cs.pending_case_id,\n  fi.incident_type AS pending_type,\n  fi.priority AS pending_priority\nFROM conversation_state cs\nLEFT JOIN forest_incidents fi ON fi.case_id = cs.pending_case_id\nWHERE cs.user_phone='{{$json.from}}'\nLIMIT 1;",
-        "options": {}
+        "query": "SELECT\n  cs.pending_case_id,\n  fi.incident_type AS pending_type,\n  fi.priority AS pending_priority\nFROM conversation_state cs\nLEFT JOIN forest_incidents fi ON fi.case_id = cs.pending_case_id\nWHERE cs.user_phone = $1\n  AND cs.updated_at > NOW() - make_interval(mins => $2::int)\nLIMIT 1;",
+        "options": {
+          "queryReplacement": "={{ $json.from }},{{ Number($env.PENDING_STATE_TTL_MINUTES || 30) }}"
+        }
       },
       "type": "n8n-nodes-base.postgres",
       "typeVersion": 2.6,
@@ -797,8 +800,10 @@
     {
       "parameters": {
         "operation": "executeQuery",
-        "query": "\tDELETE FROM conversation_state WHERE user_phone = '{{$json.from}}'",
-        "options": {}
+        "query": "DELETE FROM conversation_state WHERE user_phone = $1;",
+        "options": {
+          "queryReplacement": "={{ $json.from }}"
+        }
       },
       "type": "n8n-nodes-base.postgres",
       "typeVersion": 2.6,
@@ -864,7 +869,7 @@
     },
     {
       "parameters": {
-        "jsCode": "// Si ya fue procesado por la rama legal, salir\nif ($input.first().json.procesado_legal === true) {\n  return [];\n}\n\nconst input = $input.first().json;\nconst original = $('Rate Limiter').first().json;\n\nconst text = input.candidates?.[0]?.content?.parts?.[0]?.text || '';\n\nlet data = {};\ntry {\n  const clean = text.replace(/```json/gi, '').replace(/```/g, '').trim();\n  const match = clean.match(/\\{[\\s\\S]*\\}/);\n  data = JSON.parse(match ? match[0] : clean);\n} catch (e) {\n  data = {\n    tipo: 'OTRO',\n    prioridad: 'BAJA',\n    crear_caso: false,\n    descripcion: original.message,\n    coordenadas: {\n      lat: original.latitude,\n      lon: original.longitude\n    },\n    requiere_foto: false,\n    requiere_coordenadas: false,\n    requiere_escalado: false,\n    respuesta_usuario: 'He recibido tu mensaje, pero necesito más detalles para clasificarlo correctamente.'\n  };\n}\n\nconst tiposValidos = ['INCENDIO', 'OTRO'];\nif (!tiposValidos.includes(data.tipo)) {\n  data.tipo = 'OTRO';\n}\nif (!['ALTA', 'MEDIA', 'BAJA'].includes(data.prioridad)) {\n  data.prioridad = 'MEDIA';\n}\n\n// Si WhatsApp recibió ubicación nativa, tiene prioridad sobre Gemini\nif (original.latitude !== null && original.longitude !== null) {\n  data.coordenadas = {\n    lat: original.latitude,\n    lon: original.longitude\n  };\n}\n\nconst lat = data.coordenadas?.lat ?? null;\nconst lon = data.coordenadas?.lon ?? null;\n\n// Crear caso\nlet crearCaso = data.crear_caso !== false;\n\n// FIX: declarar finalMessage AQUI, antes de cualquier uso, para evitar\n// \"Cannot access 'finalMessage' before initialization\"\nlet finalMessage =\n  data.respuesta_usuario ||\n  'He registrado tu mensaje.';\n\n// Seguridad extra: saludos/casuales no crean caso aunque Gemini falle\nconst mensajeLimpio = String(original.message || '').trim().toLowerCase();\nconst soloCoordenadas =\n  /^-?\\d+(\\.\\d+)?\\s*,\\s*-?\\d+(\\.\\d+)?$/.test(mensajeLimpio);\n\nif (soloCoordenadas && original.has_pending !== true) {\n  crearCaso = false;\n  data.tipo = 'OTRO';\n  data.prioridad = 'BAJA';\n  data.requiere_escalado = false;\n  finalMessage = 'He recibido unas coordenadas, pero no tengo ningún aviso pendiente asociado. Para reportar un incendio, escribe primero qué está ocurriendo: humo, fuego, olor a quemado o riesgo de incendio.';\n}\n\nconst mensajesCasuales = [\n  'hola', 'buenas', 'buenos dias', 'buenos días',\n  'buenas tardes', 'buenas noches', 'gracias',\n  'ok', 'vale', 'perfecto', 'adios', 'adiós'\n];\n\nif (data.tipo === 'OTRO' && mensajesCasuales.includes(mensajeLimpio)) {\n  crearCaso = false;\n  data.prioridad = 'BAJA';\n  data.requiere_foto = false;\n  data.requiere_coordenadas = false;\n  data.requiere_escalado = false;\n}\n\n// Coordenadas necesarias\nconst needsCoords =\n  crearCaso === true &&\n  ['INCENDIO'].includes(data.tipo) &&\n  (lat === null || lon === null);\n\nconst requiereEscalado =\n  crearCaso === true &&\n  (\n    data.requiere_escalado === true ||\n    data.prioridad === 'ALTA'\n  );\n\nif (needsCoords) {\n  finalMessage = `He clasificado tu aviso como *${data.tipo}*.\n\nPara registrarlo correctamente necesito la ubicación exacta. Puedes enviarme la ubicación de WhatsApp o escribir las coordenadas en formato: 40.4168, -3.7038`;\n}\n\nreturn [{\n  json: {\n    ...original,\n    classification: data,\n    tipo: data.tipo,\n    prioridad: data.prioridad,\n    crearCaso,\n    descripcion: data.descripcion || original.message,\n    lat,\n    lon,\n    ubicacion_texto: data.ubicacion_texto || null,\n    parcela: data.parcela || null,\n    necesita_coordenadas: needsCoords,\n    requiereEscalado,\n    finalMessage,\n    caseId: crearCaso\n      ? `FOR-${Date.now()}-${Math.random().toString(36).slice(2, 7).toUpperCase()}`\n      : null\n  }\n}];"
+        "jsCode": "// Si ya fue procesado por la rama legal, salir\nif ($input.first().json.procesado_legal === true) {\n  return [];\n}\n\nconst input = $input.first().json;\nconst original = $('Rate Limiter').first().json;\n\nconst text = input.candidates?.[0]?.content?.parts?.[0]?.text || '';\n\nconst FIRE_WORDS = /\\b(humo|fuego|incendio|llamas?|arde|ardiendo|quemad[oa]|quemando|conato|chispas?|rayo|colilla|fogata|barbacoa)\\b/i;\n\nlet data = null;\nlet aiFallback = false;\ntry {\n  if (!text) throw new Error('Respuesta vacía de Gemini');\n  const clean = text.replace(/```json/gi, '').replace(/```/g, '').trim();\n  const match = clean.match(/\\{[\\s\\S]*\\}/);\n  data = JSON.parse(match ? match[0] : clean);\n} catch (e) {\n  aiFallback = true;\n}\n\n// FIX v2.1: si la IA falla, no perder avisos de incendio.\n// Con palabras de fuego -> caso INCENDIO MEDIA con escalado; sin ellas -> pedir detalle.\nif (aiFallback) {\n  const pareceIncendio = FIRE_WORDS.test(String(original.message || ''));\n  data = pareceIncendio\n    ? {\n        tipo: 'INCENDIO',\n        subtipo: null,\n        prioridad: 'MEDIA',\n        crear_caso: true,\n        descripcion: `[Clasificado sin IA] ${original.message}`,\n        coordenadas: { lat: original.latitude, lon: original.longitude },\n        requiere_escalado: true,\n        respuesta_usuario: 'He registrado tu aviso de posible incendio.'\n      }\n    : {\n        tipo: 'OTRO',\n        prioridad: 'BAJA',\n        crear_caso: false,\n        descripcion: original.message,\n        coordenadas: { lat: original.latitude, lon: original.longitude },\n        requiere_escalado: false,\n        respuesta_usuario: 'Ahora mismo no he podido procesar tu mensaje. Si estás viendo humo o fuego, escríbeme qué ocurre. Si hay peligro inmediato, llama al 112.'\n      };\n}\n\nconst tiposValidos = ['INCENDIO', 'OTRO'];\nif (!tiposValidos.includes(data.tipo)) {\n  data.tipo = 'OTRO';\n}\nif (!['ALTA', 'MEDIA', 'BAJA'].includes(data.prioridad)) {\n  data.prioridad = 'MEDIA';\n}\n\n// Si WhatsApp recibió ubicación nativa, tiene prioridad sobre Gemini\nif (original.latitude !== null && original.longitude !== null) {\n  data.coordenadas = {\n    lat: original.latitude,\n    lon: original.longitude\n  };\n}\n\nconst lat = data.coordenadas?.lat ?? null;\nconst lon = data.coordenadas?.lon ?? null;\n\n// Crear caso\nlet crearCaso = data.crear_caso !== false;\n\n// FIX: declarar finalMessage AQUI, antes de cualquier uso, para evitar\n// \"Cannot access 'finalMessage' before initialization\"\nlet finalMessage =\n  data.respuesta_usuario ||\n  'He registrado tu mensaje.';\n\n// Seguridad extra: saludos/casuales no crean caso aunque Gemini falle\nconst mensajeLimpio = String(original.message || '').trim().toLowerCase();\nconst soloCoordenadas =\n  /^-?\\d+(\\.\\d+)?\\s*,\\s*-?\\d+(\\.\\d+)?$/.test(mensajeLimpio);\n\nif (soloCoordenadas && original.has_pending !== true) {\n  crearCaso = false;\n  data.tipo = 'OTRO';\n  data.prioridad = 'BAJA';\n  data.requiere_escalado = false;\n  finalMessage = 'He recibido unas coordenadas, pero no tengo ningún aviso pendiente asociado. Para reportar un incendio, escribe primero qué está ocurriendo: humo, fuego, olor a quemado o riesgo de incendio.';\n}\n\nconst mensajesCasuales = [\n  'hola', 'buenas', 'buenos dias', 'buenos días',\n  'buenas tardes', 'buenas noches', 'gracias',\n  'ok', 'vale', 'perfecto', 'adios', 'adiós'\n];\n\nconst mensajeSinPuntuacion = mensajeLimpio.replace(/[¡!¿?.,;:)(]/g, '').replace(/\\s+/g, ' ').trim();\n\nif (mensajesCasuales.includes(mensajeSinPuntuacion)) {\n  data.tipo = 'OTRO';\n  crearCaso = false;\n  data.prioridad = 'BAJA';\n  data.requiere_foto = false;\n  data.requiere_coordenadas = false;\n  data.requiere_escalado = false;\n}\n\n// Coordenadas necesarias\nconst needsCoords =\n  crearCaso === true &&\n  ['INCENDIO'].includes(data.tipo) &&\n  (lat === null || lon === null);\n\nconst requiereEscalado =\n  crearCaso === true &&\n  (\n    data.requiere_escalado === true ||\n    data.prioridad === 'ALTA'\n  );\n\nif (needsCoords) {\n  finalMessage = `He clasificado tu aviso como *${data.tipo}*.\n\nPara registrarlo correctamente necesito la ubicación exacta. Puedes enviarme la ubicación de WhatsApp o escribir las coordenadas en formato: 40.4168, -3.7038`;\n}\n\nreturn [{\n  json: {\n    ...original,\n    classification: data,\n    ai_fallback: aiFallback,\n    tipo: data.tipo,\n    prioridad: data.prioridad,\n    crearCaso,\n    descripcion: data.descripcion || original.message,\n    lat,\n    lon,\n    ubicacion_texto: data.ubicacion_texto || null,\n    parcela: data.parcela || null,\n    necesita_coordenadas: needsCoords,\n    requiereEscalado,\n    finalMessage,\n    caseId: crearCaso\n      ? `FOR-${Date.now()}-${Math.random().toString(36).slice(2, 7).toUpperCase()}`\n      : null\n  }\n}];"
       },
       "id": "42926f1f-e52e-4de6-b463-b2a5baefbe17",
       "name": "Procesar Clasificación",
@@ -1060,8 +1065,8 @@
       "type": "n8n-nodes-base.if",
       "typeVersion": 2.3,
       "position": [
-        -7408,
-        3632
+        -6144,
+        3712
       ],
       "id": "f4ad0640-74ac-4113-9fe5-952ab89bef84",
       "name": "IF ¿Es imagen?"
@@ -1083,8 +1088,8 @@
       "type": "n8n-nodes-base.httpRequest",
       "typeVersion": 4.4,
       "position": [
-        -7200,
-        3536
+        -5728,
+        3696
       ],
       "id": "750167fe-93d2-4552-8982-085d8a69c988",
       "name": "Obtener URL media"
@@ -1112,8 +1117,8 @@
       "type": "n8n-nodes-base.httpRequest",
       "typeVersion": 4.4,
       "position": [
-        -6992,
-        3536
+        -5520,
+        3696
       ],
       "id": "72bcb7cf-9129-4eb5-ac7f-aac4ad7ab1c9",
       "name": "Descargar imagen"
@@ -1139,28 +1144,29 @@
       "type": "n8n-nodes-base.httpRequest",
       "typeVersion": 4.4,
       "position": [
-        -6576,
-        3536
+        -5104,
+        3696
       ],
       "id": "8a088ae9-141a-4ed8-a7ab-4d55f7fc0c3c",
-      "name": "Gemini Vision"
+      "name": "Gemini Vision",
+      "onError": "continueRegularOutput"
     },
     {
       "parameters": {
-        "jsCode": "const original = $('Preparar Imagen Base64').first().json;\nconst input = $input.first().json;\n\nconst text = input.candidates?.[0]?.content?.parts?.[0]?.text || '';\n\nlet vision = {};\ntry {\n  const clean = text.replace(/```json/gi, '').replace(/```/g, '').trim();\n  const match = clean.match(/\\{[\\s\\S]*\\}/);\n  vision = JSON.parse(match ? match[0] : clean);\n} catch (e) {\n  vision = {};\n}\n\nconst hayFuego = vision.hay_fuego === true;\nconst hayHumo = vision.hay_humo === true;\nconst viviendasCerca = vision.hay_viviendas_cerca === true;\nconst incendioGrande = vision.tamano_incendio === 'GRANDE';\n\nconst prioridad =\n  vision.prioridad === 'ALTA' ||\n  hayFuego ||\n  viviendasCerca ||\n  incendioGrande\n    ? 'ALTA'\n    : vision.prioridad === 'BAJA'\n      ? 'BAJA'\n      : 'MEDIA';\n\nconst requiereEscalado =\n  prioridad === 'ALTA' || vision.requiere_escalado === true;\n\nconst caseId =\n  `FOR-${Date.now()}-${Math.random().toString(36).slice(2, 7).toUpperCase()}`;\n\nreturn [{\n  json: {\n    ...original,\n\n    vision_result: vision,\n\n    classification: {\n      tipo: 'INCENDIO',\n      subtipo: hayFuego ? 'FUEGO' : 'FOCO_TERMICO',\n      prioridad,\n      crear_caso: true,\n      descripcion:\n        vision.descripcion ||\n        original.caption ||\n        'Imagen recibida con posible humo o incendio forestal.',\n      coordenadas: {\n        lat: original.latitude,\n        lon: original.longitude\n      },\n      ubicacion_texto: vision.ubicacion_texto || original.caption || null,\n      requiere_coordenadas:\n        original.latitude === null || original.longitude === null,\n      requiere_escalado: requiereEscalado,\n      respuesta_usuario: 'He recibido la imagen del posible incendio.'\n    },\n\n    tipo: 'INCENDIO',\n    prioridad,\n    crearCaso: true,\n\n    descripcion:\n      vision.descripcion ||\n      original.caption ||\n      'Imagen recibida con posible humo o incendio forestal.',\n\n    lat: original.latitude,\n    lon: original.longitude,\n\n    ubicacion_texto: vision.ubicacion_texto || original.caption || null,\n    parcela: null,\n\n    necesita_coordenadas:\n      original.latitude === null || original.longitude === null,\n\n    requiereEscalado,\n\n    finalMessage:\n      original.latitude !== null && original.longitude !== null\n        ? 'He recibido la imagen y la ubicación del posible incendio.'\n        : `🔥 *Aviso de incendio forestal*\n\nHe recibido la imagen y la he analizado como posible incendio.\n\nPara registrarlo correctamente necesito la ubicación exacta.\n\nPuedes enviarme:\n\n📍 Tu ubicación de WhatsApp\n🗺️ Nombre del monte, camino o zona\n🌍 Coordenadas aproximadas`,\n\n    caseId\n  }\n}];"
+        "jsCode": "const original = $('Preparar Imagen Base64').first().json;\nconst input = $input.first().json;\n\nconst text = input.candidates?.[0]?.content?.parts?.[0]?.text || '';\n\nlet vision = null;\ntry {\n  if (!text) throw new Error('Respuesta vacía de Gemini Vision');\n  const clean = text.replace(/```json/gi, '').replace(/```/g, '').trim();\n  const match = clean.match(/\\{[\\s\\S]*\\}/);\n  vision = JSON.parse(match ? match[0] : clean);\n} catch (e) {\n  vision = null;\n}\n\nconst visionFallback = vision === null;\nconst v = vision || {};\n\nconst hayFuego = v.hay_fuego === true;\nconst hayHumo = v.hay_humo === true;\nconst viviendasCerca = v.hay_viviendas_cerca === true;\nconst incendioGrande = v.tamano_incendio === 'GRANDE';\n\n// FIX v2.1: si Vision dice claramente que no hay fuego ni humo, no se crea caso.\n// Si Vision falla, se trata como posible incendio (opción segura).\nconst noEsIncendio =\n  !visionFallback &&\n  v.es_incendio_forestal_probable === false &&\n  !hayFuego &&\n  !hayHumo;\n\nif (noEsIncendio) {\n  const msg = 'He analizado la imagen, pero no veo humo ni fuego. Si estás viendo un incendio, escríbeme qué ocurre o envíame otra foto. Si hay peligro inmediato, llama al 112.';\n  return [{\n    json: {\n      ...original,\n      vision_result: v,\n      vision_fallback: false,\n      tipo: 'OTRO',\n      prioridad: 'BAJA',\n      crearCaso: false,\n      caseId: null,\n      requiereEscalado: false,\n      finalMessage: msg,\n      userMessage: msg,\n      classification: { tipo: 'OTRO', prioridad: 'BAJA', crear_caso: false, respuesta_usuario: msg }\n    }\n  }];\n}\n\nconst prioridad =\n  v.prioridad === 'ALTA' || hayFuego || viviendasCerca || incendioGrande\n    ? 'ALTA'\n    : 'MEDIA';\n\nconst requiereEscalado = prioridad === 'ALTA' || v.requiere_escalado === true || visionFallback;\n\nconst descripcion =\n  (visionFallback ? '[Imagen sin analizar] ' : '') +\n  (v.descripcion || original.caption || 'Imagen recibida con posible humo o incendio forestal.');\n\nconst tieneUbicacion = original.latitude !== null && original.longitude !== null;\n\nconst caseId =\n  `FOR-${Date.now()}-${Math.random().toString(36).slice(2, 7).toUpperCase()}`;\n\nreturn [{\n  json: {\n    ...original,\n\n    vision_result: v,\n    vision_fallback: visionFallback,\n\n    classification: {\n      tipo: 'INCENDIO',\n      subtipo: hayFuego ? 'FUEGO' : hayHumo ? 'HUMO' : 'OTRO_RIESGO',\n      prioridad,\n      crear_caso: true,\n      descripcion,\n      coordenadas: { lat: original.latitude, lon: original.longitude },\n      ubicacion_texto: v.ubicacion_texto || original.caption || null,\n      requiere_coordenadas: !tieneUbicacion,\n      requiere_escalado: requiereEscalado,\n      respuesta_usuario: 'He recibido la imagen del posible incendio.'\n    },\n\n    tipo: 'INCENDIO',\n    prioridad,\n    crearCaso: true,\n    descripcion,\n\n    lat: original.latitude,\n    lon: original.longitude,\n\n    ubicacion_texto: v.ubicacion_texto || original.caption || null,\n    parcela: null,\n\n    necesita_coordenadas: !tieneUbicacion,\n    requiereEscalado,\n\n    finalMessage: tieneUbicacion\n      ? 'He recibido la imagen y la ubicación del posible incendio.'\n      : `🔥 *Aviso de incendio forestal*\n\nHe recibido la imagen y la he analizado como posible incendio.\n\nPara registrarlo correctamente necesito la ubicación exacta.\n\nPuedes enviarme:\n\n📍 Tu ubicación de WhatsApp\n🗺️ Nombre del monte, camino o zona\n🌍 Coordenadas aproximadas`,\n\n    caseId\n  }\n}];"
       },
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
       "position": [
-        -6368,
-        3536
+        -4896,
+        3936
       ],
       "id": "8ba9c0f4-72c2-4562-968a-97e6543609d4",
       "name": "Preparar Resultado Imagen"
     },
     {
       "parameters": {
-        "jsCode": "const i = $input.first().json;\nconst text = String(i.message || '').trim().toLowerCase();\n\nconst esUbicacionWhatsApp =\n  i.latitude !== null && i.latitude !== undefined &&\n  i.longitude !== null && i.longitude !== undefined;\n\nconst pareceCoordenadas =\n  /^-?\\d+(\\.\\d+)?\\s*,\\s*-?\\d+(\\.\\d+)?$/.test(text);\n\nconst tienePalabrasIncendio =\n  /\\b(humo|fuego|incendio|llamas|arde|ardiendo|quemado|quemando|conato|explosión|explosion|chispa|chispas|barbacoa|fogata|rayo|colilla|olor a quemado|huele a quemado)\\b/.test(text);\n\nconst pareceLugarTexto =\n  !tienePalabrasIncendio &&\n  !pareceCoordenadas &&\n  text.length >= 3;\n\nreturn [{\n  json: {\n    ...i,\n    pending_reply_type:\n      esUbicacionWhatsApp || pareceCoordenadas\n        ? 'coords'\n        : pareceLugarTexto\n          ? 'place_text'\n          : 'new_report'\n  }\n}];"
+        "jsCode": "const i = $input.first().json;\nconst text = String(i.message || '').trim().toLowerCase();\n\nconst esUbicacionWhatsApp =\n  i.latitude !== null && i.latitude !== undefined &&\n  i.longitude !== null && i.longitude !== undefined;\n\nconst pareceCoordenadas =\n  /^-?\\d+(\\.\\d+)?\\s*,\\s*-?\\d+(\\.\\d+)?$/.test(text);\n\nconst tienePalabrasIncendio =\n  /\\b(humo|fuego|incendio|llamas|arde|ardiendo|quemado|quemando|conato|explosión|explosion|chispa|chispas|barbacoa|fogata|rayo|colilla|olor a quemado|huele a quemado)\\b/.test(text);\n\n// FIX v2.1: respuestas casuales no se tratan como nombre de lugar\nconst textoSinPuntuacion = text.replace(/[¡!¿?.,;:)(]/g, '').replace(/\\s+/g, ' ').trim();\nconst MENSAJES_CASUALES = [\n  'hola', 'buenas', 'buenos dias', 'buenos días', 'buenas tardes', 'buenas noches',\n  'gracias', 'muchas gracias', 'vale', 'vale gracias', 'ok', 'okay', 'ok gracias',\n  'perfecto', 'genial', 'de acuerdo', 'entendido', 'si', 'sí', 'no', 'adios', 'adiós'\n];\nconst esCasual = MENSAJES_CASUALES.includes(textoSinPuntuacion);\n\nconst pareceLugarTexto =\n  !i.isImage &&\n  !esCasual &&\n  !tienePalabrasIncendio &&\n  !pareceCoordenadas &&\n  textoSinPuntuacion.length >= 3;\n\nreturn [{\n  json: {\n    ...i,\n    pending_reply_type:\n      esUbicacionWhatsApp || pareceCoordenadas\n        ? 'coords'\n        : pareceLugarTexto\n          ? 'place_text'\n          : 'new_report'\n  }\n}];"
       },
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
@@ -1191,11 +1197,58 @@
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
       "position": [
-        -6784,
-        3536
+        -5312,
+        3696
       ],
       "id": "c82ae9c9-c50a-4a14-bcf5-d4f71b57ecf5",
       "name": "Preparar Imagen Base64"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 3
+          },
+          "conditions": [
+            {
+              "id": "082e4c33-13c7-4277-be00-43b50ae0e9f2",
+              "leftValue": "={{ $json.has_pending === true }}",
+              "rightValue": "",
+              "operator": {
+                "type": "boolean",
+                "operation": "true",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.3,
+      "position": [
+        -5952,
+        3632
+      ],
+      "id": "8f908f31-1c77-4005-aa88-f6ec6dc237b0",
+      "name": "IF ¿Imagen con caso pendiente?"
+    },
+    {
+      "parameters": {
+        "jsCode": "const i = $input.first().json;\n\n// FIX v2.1: una foto mientras se espera la ubicación no abre un caso nuevo.\nconst msg = `📍 Todavía necesito la ubicación de tu aviso anterior${i.pending_case_id ? ` (ID: ${i.pending_case_id})` : ''}.\n\nPuedes enviarme:\n\n📍 Tu ubicación de WhatsApp\n🌍 Coordenadas (ej: 40.4168, -3.7038)\n🗺️ Nombre del monte, paraje o zona`;\n\nreturn [{\n  json: {\n    ...i,\n    whatsappTo: String(i.from || '').replace(/\\D/g, ''),\n    whatsappText: msg,\n    finalMessage: msg\n  }\n}];"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -5728,
+        3536
+      ],
+      "id": "4e5ca273-2b23-4821-b4b6-aaf3583387d7",
+      "name": "Preparar Recordatorio Ubicación"
     }
   ],
   "pinData": {},
@@ -1334,7 +1387,7 @@
         ],
         [
           {
-            "node": "Gemini Clasificar Incidencia",
+            "node": "IF ¿Es imagen?",
             "type": "main",
             "index": 0
           }
@@ -1408,7 +1461,7 @@
       "main": [
         [
           {
-            "node": "IF ¿Es imagen?",
+            "node": "Rate Limiter",
             "type": "main",
             "index": 0
           }
@@ -1667,14 +1720,14 @@
       "main": [
         [
           {
-            "node": "Obtener URL media",
+            "node": "IF ¿Imagen con caso pendiente?",
             "type": "main",
             "index": 0
           }
         ],
         [
           {
-            "node": "Rate Limiter",
+            "node": "Gemini Clasificar Incidencia",
             "type": "main",
             "index": 0
           }
@@ -1752,6 +1805,35 @@
         [
           {
             "node": "Gemini Vision",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "IF ¿Imagen con caso pendiente?": {
+      "main": [
+        [
+          {
+            "node": "Preparar Recordatorio Ubicación",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Obtener URL media",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Preparar Recordatorio Ubicación": {
+      "main": [
+        [
+          {
+            "node": "Enviar WhatsApp Usuario",
             "type": "main",
             "index": 0
           }
