@@ -1,17 +1,17 @@
-# 🌲 AI Forest Assistant
+# 🔥 Wildfire Sentinel AI
 
-**AI Forest Assistant** es una plataforma impulsada por IA para gestión de incidencias forestales, monitorización de riesgo de incendio, asistencia legal/normativa y automatización operativa mediante **WhatsApp**, **Gemini AI**, **PostgreSQL/PostGIS**, **Google Maps**, **OpenWeatherMap**, **Google Sheets** y **n8n**.
+🇬🇧 [English version](README.md)
 
-El sistema automatiza avisos de incendio, seguimiento de plagas, solicitudes de permisos, partes de trabajo, consultas legales, escalado a supervisores, análisis meteorológico de riesgo de incendio y dashboards operativos.
+**Wildfire Sentinel AI** es un sistema multimodal de avisos y alertas de incendios forestales construido con **n8n**, **WhatsApp Business API**, **Gemini AI** (texto y visión), **PostgreSQL/PostGIS**, **Google Maps Geocoding**, **OpenWeatherMap**, **Google Sheets** y **Gmail**.
 
-Diseñado para operaciones forestales reales y gestión de incidencias ambientales.
+Cualquier persona puede avisar de humo o fuego por WhatsApp, con texto, una foto o su ubicación. El sistema clasifica el aviso con IA, pide la ubicación si falta, registra el caso con geolocalización y escala al supervisor los casos críticos. Además, calcula el riesgo meteorológico de incendio de forma periódica y envía un resumen diario de métricas.
 
 [![n8n](https://img.shields.io/badge/n8n-Workflow-orange?style=flat-square)](https://n8n.io/)
-[![Gemini AI](https://img.shields.io/badge/Gemini-AI-4285F4?style=flat-square&logo=google)](https://ai.google.dev)
+[![Gemini AI](https://img.shields.io/badge/Gemini-2.5_Flash_Lite-4285F4?style=flat-square&logo=google)](https://ai.google.dev)
 [![WhatsApp](https://img.shields.io/badge/WhatsApp-Business_API-25D366?style=flat-square&logo=whatsapp)](https://developers.facebook.com/docs/whatsapp)
 [![PostgreSQL](https://img.shields.io/badge/PostgreSQL-16-4169E1?style=flat-square&logo=postgresql)](https://www.postgresql.org/)
 [![PostGIS](https://img.shields.io/badge/PostGIS-3.4-4169E1?style=flat-square)](https://postgis.net/)
-[![Google Maps](https://img.shields.io/badge/Google_Maps-API-4285F4?style=flat-square&logo=googlemaps)](https://mapsplatform.google.com/)
+[![Google Maps](https://img.shields.io/badge/Google_Maps-Geocoding-4285F4?style=flat-square&logo=googlemaps)](https://mapsplatform.google.com/)
 [![OpenWeatherMap](https://img.shields.io/badge/OpenWeatherMap-API-FC4C02?style=flat-square)](https://openweathermap.org/api)
 [![License: MIT](https://img.shields.io/badge/License-MIT-22c55e?style=flat-square)](LICENSE)
 [![Status](https://img.shields.io/badge/Status-Pilot_Ready-22c55e?style=flat-square)](https://github.com/alejandro-orbis)
@@ -20,108 +20,131 @@ Diseñado para operaciones forestales reales y gestión de incidencias ambiental
 
 ## 🚀 Funcionalidades principales
 
-- 🔥 Detección de incidencias de incendio con IA
-- 📍 Geolocalización y reverse geocoding
-- 🤖 Motor de clasificación con Gemini AI
-- 📲 Flujos operativos por WhatsApp
-- 🌦️ Alertas automáticas de riesgo forestal
-- 📊 Dashboard y analítica
-- ⚖️ Asistente legal/normativo forestal
-- 🚨 Escalado automático al supervisor
-- 🧠 Flujos con contexto operativo
-- 🗄️ Integración PostgreSQL + PostGIS
-- 📈 Métricas históricas y reportes
-- 🛡️ Rate limiting y protección anti-spam
+- 📲 Recepción de avisos por WhatsApp: texto, imagen, ubicación nativa, documentos y botones interactivos
+- 🤖 Clasificación de avisos con Gemini (`INCENDIO` / `OTRO`), con subtipo y prioridad
+- 🖼️ Análisis de imágenes con Gemini Vision: detecta humo, fuego, tamaño estimado y viviendas o carreteras cercanas
+- 📍 Flujo conversacional de ubicación pendiente: si falta la ubicación, el bot la pide y completa el caso cuando llega
+- 🗺️ Tres formas de dar la ubicación: ubicación de WhatsApp, coordenadas escritas o nombre del lugar (geocoding por texto)
+- 🧭 Reverse geocoding a municipio, provincia y dirección aproximada
+- 🗄️ Registro geoespacial en PostgreSQL + PostGIS (`POINT`, SRID 4326)
+- 🚨 Escalado automático al supervisor por WhatsApp según tipo y prioridad
+- 🌦️ Cálculo de riesgo de incendio cada 4 horas y alertas a brigadistas
+- 📊 Resumen diario de métricas por WhatsApp, email y Google Sheets
+- 🛡️ Rate limiting por conversación y deduplicación de mensajes de WhatsApp
 
 ---
 
-## 🌍 Casos de uso potenciales
+## 🧩 Workflows
 
-- Servicios forestales municipales
-- Agencias medioambientales
-- Equipos de prevención de incendios
-- Empresas forestales
-- Respuesta rural ante emergencias
-- Consultorías ambientales
-- Monitorización ambiental inteligente
-- Automatización operativa asistida por IA
+| Workflow | Disparador | Propósito |
+|---|---|---|
+| `01 Core (WhatsApp)` | Webhook de WhatsApp | Recepción, clasificación, geolocalización, registro y escalado de avisos |
+| `02 Alertas (Clima)` | Cada 4 horas | Scoring de riesgo meteorológico, registro y alerta a brigadistas |
+| `03 Dashboard (Métricas)` | Cada día a las 8:00 | Métricas de los últimos 7 días a Google Sheets, Gmail y WhatsApp |
 
 ---
 
-## 🧠 Capacidades de IA
-
-- Clasificación de intención
-- Priorización de incidencias
-- Conversaciones con contexto
-- Validación de coordenadas
-- Reverse geocoding
-- Preguntas legales/normativas
-- Escalado automático
-- Enrutamiento multi-tabla
-- Scoring de riesgo meteorológico
-- Generación de analítica histórica
-
----
-
-## 📌 Tipos de mensaje soportados
-
-```text
-INCENDIO
-PLAGA
-PERMISO
-INCIDENCIA
-CONSULTA_NORMATIVA
-PARTE_TRABAJO
-OTRO
-```
-
----
-
-## 🏗️ Arquitectura del sistema
+## 🏗️ Arquitectura
 
 ```mermaid
 flowchart TD
-    A[WhatsApp Webhook] --> B[Parse WhatsApp]
-    B --> C[Rate Limiter]
-    C --> D[Gestión de estado]
-    D --> E{¿Coordenadas pendientes?}
+    A[Webhook WhatsApp] --> B[Parsear WhatsApp + deduplicación]
+    B --> C{¿Es imagen?}
 
-    E -->|Sí| F[Validar coordenadas]
-    F --> G[Reverse Geocoding]
-    G --> H[Actualizar incidencia]
-    H --> I[Notificar supervisor]
+    C -->|Sí| V1[Descargar imagen de Meta]
+    V1 --> V2[Gemini Vision]
+    V2 --> V3[Preparar resultado imagen]
+    V3 --> K
 
-    E -->|No| J{¿Consulta legal?}
+    C -->|No| D[Rate Limiter]
+    D --> E[Leer conversation_state]
+    E --> F[Detectar tipo de respuesta]
+    F --> G{¿Caso pendiente de ubicación?}
 
-    J -->|Sí| K[Gemini Legal Assistant]
-    K --> L[Guardar consulta]
-    L --> M[Responder usuario]
+    G -->|Sí| P1{¿Coordenadas o texto?}
+    P1 -->|Coordenadas / ubicación| P3[UPDATE forest_incidents + PostGIS]
+    P1 -->|Nombre de lugar| P2[Geocoding por texto]
+    P2 -->|Encontrado| P3
+    P2 -->|No encontrado| U[Responder al usuario]
+    P3 --> P4[Reverse geocoding]
+    P4 --> P5[Limpiar estado + notificar supervisor]
+    P5 --> U
 
-    J -->|No| N[Motor clasificador Gemini]
-    N --> O[Procesar incidencia]
-    O --> P{¿Crear caso?}
+    G -->|No| H{¿Rate limited?}
+    H -->|Sí| U
+    H -->|No| I[Gemini clasificador]
+    I --> J[Procesar clasificación]
+    J --> K{¿Crear caso?}
 
-    P -->|Sí| Q[Enrutamiento a base de datos]
-    Q --> R[Generar notificaciones]
-    R --> S[Respuestas WhatsApp]
+    K -->|No| U
+    K -->|Sí| L[Validar coordenadas]
+    L -->|Válidas| M[Reverse geocoding]
+    M --> N[Guardar en forest_incidents]
+    L -->|Faltan| N
+    N --> O{¿Faltan coordenadas?}
+    O -->|Sí| Q[Guardar estado pendiente + pedir ubicación]
+    O -->|No| R[Escalar al supervisor si procede]
+    Q --> U
+    R --> U
 
-    P -->|No| T[Respuesta simple IA]
+    W[Cada 4 h] --> W1[OpenWeatherMap]
+    W1 --> W2[Scoring de riesgo]
+    W2 --> W3[Guardar en fire_alerts]
+    W3 --> W4{¿ALTO o EXTREMO?}
+    W4 -->|Sí| W5[WhatsApp a brigadistas]
 
-    U[Workflow meteorológico] --> V[Motor de scoring de riesgo]
-    V --> W[Alertas forestales automáticas]
-
-    X[Workflow métricas] --> Y[Dashboard y reportes]
+    X[Diario 8:00] --> X1[Consulta de métricas]
+    X1 --> X2[Google Sheets]
+    X1 --> X3[Gmail]
+    X1 --> X4[WhatsApp supervisor]
 ```
 
 ---
 
-## ⚙️ Workflows principales
+## 🧠 Clasificación con IA
 
-| Workflow | Propósito |
+### Texto
+
+Gemini clasifica cada mensaje y devuelve un JSON con tipo, subtipo, prioridad, descripción, coordenadas, ubicación en texto y si requiere escalado.
+
+| Campo | Valores |
 |---|---|
-| Core WhatsApp | Motor principal de procesamiento de incidencias |
-| Alertas Clima | Cálculo de riesgo de incendio y alertas |
-| Dashboard Métricas | Reportes semanales y analítica |
+| `tipo` | `INCENDIO`, `OTRO` |
+| `subtipo` | `HUMO`, `FUEGO`, `RAYO`, `COLILLA`, `QUEMA_ILEGAL`, `BARBACOA`, `MAQUINARIA`, `LINEA_ELECTRICA`, `FOCO_TERMICO`, `OTRO_RIESGO` |
+| `prioridad` | `ALTA`, `MEDIA`, `BAJA` |
+
+Hay salvaguardas fuera de la IA: los saludos y mensajes casuales nunca crean caso, y unas coordenadas sueltas sin aviso pendiente tampoco.
+
+### Imagen
+
+Las fotos se descargan de la API de Meta y se envían a Gemini Vision, que estima si hay humo o fuego, el tamaño del incendio y si hay viviendas o carreteras cerca. La prioridad pasa a `ALTA` si hay fuego visible, viviendas cerca o un incendio grande.
+
+### Escalado al supervisor
+
+Se notifica al supervisor cuando el caso es un `INCENDIO` con prioridad distinta de `BAJA`, o cuando la prioridad es `ALTA`. También se le avisa cuando un caso pendiente recibe su ubicación.
+
+---
+
+## 🌦️ Scoring de riesgo meteorológico
+
+El workflow de alertas consulta OpenWeatherMap cada 4 horas y suma puntos según tres factores:
+
+| Factor | Umbral | Puntos |
+|---|---|---|
+| Temperatura | > 25 / > 30 / > 35 °C | 15 / 30 / 40 |
+| Humedad | < 40 / < 30 / < 20 % | 15 / 30 / 40 |
+| Viento | > 20 / > 30 / > 50 km/h | 10 / 20 / 30 |
+
+| Puntuación | Nivel |
+|---|---|
+| ≥ 70 | `EXTREMO` |
+| ≥ 50 | `ALTO` |
+| ≥ 30 | `MODERADO` |
+| < 30 | `BAJO` |
+
+Todas las lecturas se guardan en `fire_alerts`. Con nivel `ALTO` o `EXTREMO` se envía una alerta por WhatsApp a cada brigadista configurado.
+
+> La zona monitorizada se define con las coordenadas del nodo **Consultar OpenWeatherMap**. Cámbialas por las de tu zona.
 
 ---
 
@@ -130,29 +153,30 @@ flowchart TD
 | Tecnología | Uso |
 |---|---|
 | n8n | Orquestación de workflows |
-| Gemini AI | Clasificación IA y asistente legal |
-| WhatsApp Business API | Mensajería |
-| PostgreSQL | Base de datos |
-| PostGIS | Operaciones geoespaciales |
-| Google Maps API | Reverse geocoding |
-| OpenWeatherMap | Scoring de riesgo meteorológico |
-| Google Sheets | Dashboard histórico |
-| Gmail | Reportes automáticos |
+| Gemini 2.5 Flash Lite | Clasificación de texto y análisis de imágenes |
+| WhatsApp Business API (Meta Graph v19.0) | Entrada de avisos y notificaciones |
+| PostgreSQL + PostGIS | Persistencia y datos geoespaciales |
+| Google Maps Geocoding API | Geocoding por texto y reverse geocoding |
+| OpenWeatherMap | Datos meteorológicos |
+| Google Sheets | Histórico de métricas |
+| Gmail | Resumen por email |
 
 ---
 
 ## 📂 Estructura del proyecto
 
 ```text
-AI-Forest-Assistant/
+Wildfire-Sentinel-AI/
 ├── README.md
 ├── README.ES.md
 ├── LICENSE
+├── CHANGELOG.md
+├── SECURITY.md
 ├── .env.example
 ├── workflows/
-│   ├── AI_Forest_Assistant_01_Core_WhatsApp.json
-│   ├── AI_Forest_Assistant_02_Alertas_Clima.json
-│   └── AI_Forest_Assistant_03_Dashboard_Metricas.json
+│   ├── Wildfire_Sentinel_AI_01_Core_WhatsApp.json
+│   ├── Wildfire_Sentinel_AI_02_Alertas_Clima.json
+│   └── Wildfire_Sentinel_AI_03_Dashboard_Metricas.json
 ├── database/
 │   ├── schema.sql
 │   ├── triggers.sql
@@ -161,43 +185,38 @@ AI-Forest-Assistant/
 │   └── database.md
 └── assets/
     └── screenshots/
-        ├── workflow_overview.png
-        ├── fire_alert_whatsapp.png
-        ├── legal_query_whatsapp.png
-        ├── dashboard_metrics.png
-        ├── postgres_tables.png
-        ├── postgis_location.png
-        ├── reverse_geocoding.png
-        └── google_sheets_dashboard.png
 ```
+
+---
+
+## 🗄️ Tablas principales
+
+| Tabla | Uso |
+|---|---|
+| `forest_incidents` | Avisos registrados, con coordenadas, punto PostGIS, prioridad, estado y metadata |
+| `conversation_state` | Casos a la espera de ubicación, uno por teléfono |
+| `fire_alerts` | Lecturas meteorológicas y nivel de riesgo calculado |
+
+El esquema completo está en [docs/database.md](docs/database.md).
+
+Estados de un caso en `forest_incidents.status`:
+
+- `PENDIENTE_UBICACION`: registrado, esperando la ubicación del usuario.
+- `ABIERTO`: con ubicación, listo para seguimiento.
 
 ---
 
 ## 🖼️ Capturas de pantalla
 
-### 🏗️ Arquitectura del sistema
-
-| Arquitectura modular | Core workflow |
+| Arquitectura | Core workflow |
 |---|---|
 | ![Architecture](assets/screenshots/workflow_architecture_overview.png) | ![Core Workflow](assets/screenshots/core_workflow_engine.png) |
-
----
-
-### 🧠 IA y automatización
 
 | Routing IA | Alerta de incendio |
 |---|---|
 | ![Incident Routing](assets/screenshots/incident_routing_zoom.png) | ![Wildfire Alert](assets/screenshots/wildfire_incident_alert.png) |
 
-| Consulta legal | Geolocalización de plaga |
-|---|---|
-| ![Legal Assistant](assets/screenshots/legal_assistant_query.png) | ![Pest Geolocation](assets/screenshots/pest_detection_geolocation.png) |
-
----
-
-### 📊 Reporting y persistencia
-
-| Dashboard workflow | Riesgo meteorológico |
+| Workflow de métricas | Riesgo meteorológico |
 |---|---|
 | ![Metrics Workflow](assets/screenshots/metrics_reporting.png) | ![Weather Risk](assets/screenshots/weather_risk_engine.png) |
 
@@ -212,14 +231,17 @@ AI-Forest-Assistant/
 ### 1. Requisitos
 
 - n8n self-hosted o n8n Cloud
-- PostgreSQL 13+ con PostGIS
-- Meta for Developers con WhatsApp Business API
-- Google Cloud para Gemini AI y Google Maps
+- PostgreSQL 13+ con PostGIS (por ejemplo, Supabase)
+- App en Meta for Developers con WhatsApp Business API
+- Google Cloud con Gemini API y Geocoding API habilitadas
 - Cuenta de OpenWeatherMap
-- Google Sheets
-- Gmail
+- Cuenta de Google con Sheets y Gmail
 
-### 2. Configurar base de datos
+### 2. Configurar la base de datos
+
+```sql
+CREATE EXTENSION IF NOT EXISTS postgis;
+```
 
 ```bash
 psql -U postgres -f database/schema.sql
@@ -227,58 +249,61 @@ psql -U postgres -f database/triggers.sql
 psql -U postgres -f database/indexes.sql
 ```
 
-Habilita PostGIS si es necesario:
+### 3. Importar los workflows
 
-```sql
-CREATE EXTENSION IF NOT EXISTS postgis;
-```
+En n8n: **Menú → Import from File** e importa los tres archivos de `workflows/`.
 
-### 3. Importar workflows
+### 4. Configurar credenciales en n8n
 
-En n8n:
+| Credencial | Nodos que la usan |
+|---|---|
+| Postgres | Lectura y escritura de casos, estado, alertas y métricas |
+| OpenWeatherMap | Consultar OpenWeatherMap |
+| Google Sheets OAuth2 | Guardar en Google Sheets (histórico) |
+| Gmail OAuth2 | Enviar email al supervisor |
 
-```text
-Menú → Import from File
-```
+En el nodo de Google Sheets, selecciona tu propia hoja de cálculo.
 
-Importa los tres workflows desde la carpeta `workflows/`.
-
-### 4. Configurar webhook de WhatsApp
+### 5. Configurar el webhook de WhatsApp
 
 | Campo | Valor |
 |---|---|
 | Callback URL | `https://tu-dominio.com/webhook/omnichannel-webhook` |
-| Verify Token | `META_VERIFY_TOKEN` |
-| Evento | Messages |
+| Verify Token | El valor de `META_VERIFY_TOKEN` |
+| Campo suscrito | `messages` |
 
 ---
 
 ## 🔐 Variables de entorno
 
 ```env
+N8N_BLOCK_ENV_ACCESS_IN_NODE=false
 GEMINI_API_KEY=
 META_ACCESS_TOKEN=
 META_VERIFY_TOKEN=
 WHATSAPP_PHONE_NUMBER_ID=
 GOOGLE_MAPS_API_KEY=
-OPENWEATHER_API_KEY=
 SUPERVISOR_WHATSAPP=
 SUPERVISOR_EMAIL=
-BRIGADISTAS_WHATSAPP=[]
+BRIGADISTAS_WHATSAPP=["34600000000","34600000001"]
 RATE_LIMIT_PER_MINUTE=15
 ```
 
+- `N8N_BLOCK_ENV_ACCESS_IN_NODE=false` es necesario para que los nodos puedan leer `$env`.
+- `BRIGADISTAS_WHATSAPP` debe ser un array JSON válido. Si está vacío o mal formado, el workflow de alertas falla a propósito para que no pase desapercibido.
+- OpenWeatherMap se configura como credencial de n8n, no como variable de entorno.
+
 ---
 
-## 📊 Dashboard
+## 📊 Dashboard de métricas
 
-El workflow de métricas genera un resumen semanal y lo envía a:
+Cada día a las 8:00 se calculan las métricas de los últimos 7 días (y las ubicaciones con más casos de los últimos 30) y se envían a:
 
-- Google Sheets
-- Gmail
-- WhatsApp del supervisor
+- Google Sheets, como fila del histórico
+- Gmail, como email HTML al supervisor
+- WhatsApp, como resumen al supervisor
 
-Columnas recomendadas:
+Columnas de la hoja:
 
 ```text
 FECHA
@@ -287,11 +312,7 @@ INCIDENTES_ALTA
 INCIDENTES_MEDIA
 INCIDENTES_BAJA
 INCENDIOS
-PLAGAS
-PERMISOS
 INCIDENCIAS
-PARTES_TRABAJO
-CONSULTAS_LEGALES
 ALERTAS_TOTAL
 ALERTAS_EXTREMO
 ALERTAS_ALTO
@@ -305,100 +326,75 @@ GENERADO_EN
 
 ---
 
-## 🔧 Nodos clave
+## 🧪 Ejemplos de uso
 
-| Nodo | Función |
-|---|---|
-| Parse WhatsApp | Normaliza texto, ubicación, imágenes y documentos |
-| Rate Limiter | Limita mensajes por conversación |
-| Gestión de estado | Detecta coordenadas pendientes |
-| Gemini Clasificador | Clasifica el tipo de mensaje |
-| Procesar Clasificación | Normaliza JSON y decide si crear caso |
-| Validar Coordenadas | Valida latitud y longitud |
-| Reverse Geocoding | Convierte coordenadas en ubicaciones legibles |
-| Estado Pendiente | Guarda casos esperando coordenadas |
-| Preparar Registro | Construye payloads para PostgreSQL |
-| Router / Switch | Enruta a la tabla correcta |
-| Preparar Respuesta Usuario | Formatea el mensaje final |
-| Notificar Supervisor | Escala casos críticos |
-| Procesar Métricas | Construye datos para el dashboard semanal |
+### Aviso por texto sin ubicación
+
+```text
+Usuario: Hay humo intenso al lado de unas casas.
+Bot:     🔥 Aviso de incendio forestal. Necesito la ubicación exacta...
+Usuario: [envía ubicación de WhatsApp]
+Bot:     ✅ Caso completado con coordenadas. ID: FOR-...
+Supervisor: 📌 CASO ACTUALIZADO con ubicación.
+```
+
+### Ubicación por nombre de lugar
+
+```text
+Usuario: Huele a quemado en el monte.
+Bot:     Necesito la ubicación exacta...
+Usuario: Monte de Valdespartera, Zaragoza
+Bot:     ✅ Caso completado con coordenadas.
+```
+
+### Aviso con foto
+
+```text
+Usuario: [envía foto de una columna de humo]
+Bot:     He recibido la imagen y la he analizado como posible incendio.
+         Necesito la ubicación exacta...
+```
+
+### Mensaje casual
+
+```text
+Usuario: Hola
+Bot:     ¿Quieres reportar humo, fuego o una posible situación de riesgo de incendio forestal?
+```
 
 ---
 
 ## 🛡️ Seguridad
 
-- No subas `.env`.
-- No hardcodees tokens.
-- Usa variables de entorno.
-- Publica solo exports sanitizados.
-- Filtra eventos vacíos y estados de lectura de WhatsApp.
-- Mantén el rate limiting activo.
-- Protege el verify token del webhook.
-- Usa Row Level Security si conviertes el sistema en multi-tenant.
-- Rota secretos antes de pasar a producción.
-
----
-
-## 🧪 Ejemplos de uso
-
-### Incendio sin coordenadas
-
-```text
-Usuario: Hay humo en el bosque.
-Bot: Necesito la ubicación exacta.
-```
-
-Después:
-
-```text
-Usuario: 40.4168, -3.7038
-Bot: Caso completado con coordenadas.
-Supervisor: Caso actualizado con ubicación.
-```
-
-### Plaga
-
-```text
-Usuario: He visto procesionaria en los pinos cerca del camino.
-Bot: Necesito la ubicación exacta para evaluar el caso.
-```
-
-### Consulta normativa
-
-```text
-Usuario: ¿Puedo podar una encina en agosto?
-Bot: Respuesta legal basada en el contexto normativo configurado.
-```
+- No subas `.env` ni credenciales.
+- Elimina `pinData` de los workflows exportados antes de publicarlos: puede contener teléfonos reales y cabeceras de peticiones.
+- No dejes números de teléfono reales como valor por defecto en los nodos.
+- Mantén activo el rate limiting.
+- Protege el verify token del webhook y, en producción, valida la firma `x-hub-signature-256` de Meta.
+- Usa Row Level Security si conviertes el sistema en multi-organización.
+- Rota los secretos antes de pasar a producción.
 
 ---
 
 ## 🗺️ Roadmap
 
-- Soporte multicanal: Instagram y Facebook Messenger
-- Dashboard web en tiempo real
-- Mapa GIS interactivo
-- Detección de incidencias duplicadas
+- Validación de la firma del webhook de Meta
+- Monitorización meteorológica de varias zonas
+- Detección de avisos duplicados por cercanía geográfica
 - Asignación automática por zona
+- Dashboard web en tiempo real con mapa GIS
 - Gestión avanzada de estados del caso
-- Análisis de imágenes con IA
+- Avisos por nota de voz
 - Reportes PDF automáticos
-- Motor predictivo de riesgo de incendio
-- Integraciones con drones
-- Reporte de incidencias por voz
-- Aplicación móvil para equipos de campo
-- Soporte multi-organización
+- Soporte multicanal: Telegram, Instagram y Messenger
 
 ---
 
 ## ⚠️ Disclaimer
 
-Este repositorio contiene una versión pública de demostración con fines educativos y de portfolio.
+Este repositorio es una versión pública de demostración con fines educativos y de portfolio. Algunos prompts y componentes de producción pueden estar simplificados.
 
-Algunos workflows avanzados, prompts y componentes de producción pueden estar simplificados u omitidos intencionadamente.
-
-El asistente legal y normativo incluido en este proyecto está diseñado para proporcionar orientación informativa fundamentada mediante contexto predefinido y respuestas generadas por IA. Sin embargo, las leyes, normativas y procedimientos administrativos pueden cambiar con el tiempo y variar según la región.
-
-Este sistema no debe considerarse un sustituto de asesoramiento legal profesional ni de información oficial de organismos competentes.
+El sistema **no sustituye** a los servicios oficiales de emergencia. Ante un incendio, llama siempre al **112**.
 
 ---
 
@@ -411,12 +407,8 @@ MIT License.
 ## 👤 Autor
 
 **Alejandro Peralta**  
-Especialista en Automatización de Procesos
+Especialista en Automatización de Procesos · [Orbis Automations](https://orbisautomations.com)
 
 - GitHub: [@alejandro-orbis](https://github.com/alejandro-orbis)
 - LinkedIn: [linkedin.com/in/alejandro-orbis](https://linkedin.com/in/alejandro-orbis)
 - Email: [Contacto](mailto:alex_noya@hotmail.com)
-
----
-
-Diseñado para operaciones forestales reales y gestión de incidencias ambientales.

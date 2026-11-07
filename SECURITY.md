@@ -21,6 +21,6 @@ When reporting a vulnerability, please include:
 
 Reports will be reviewed as soon as possible.
 
-Please note that EvidenceCheck AI is an open-source portfolio and educational project. While security reports are welcome and appreciated, response times may vary.
+Please note that Wildfire Sentinel AI is an open-source portfolio and educational project. While security reports are welcome and appreciated, response times may vary.
 
 Thank you for helping improve the security of the project.

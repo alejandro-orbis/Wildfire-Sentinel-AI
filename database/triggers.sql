@@ -1,5 +1,5 @@
 -- ============================================================
--- AI Forest Assistant - Triggers
+-- Wildfire Sentinel AI - Triggers
 -- PostgreSQL + PostGIS
 -- ============================================================
 
@@ -45,54 +45,6 @@ EXECUTE FUNCTION set_updated_at();
 DROP TRIGGER IF EXISTS trg_forest_incidents_location ON forest_incidents;
 CREATE TRIGGER trg_forest_incidents_location
 BEFORE INSERT OR UPDATE ON forest_incidents
-FOR EACH ROW
-EXECUTE FUNCTION set_location_from_coordinates();
-
--- ============================================================
--- pest_cases triggers
--- ============================================================
-
-DROP TRIGGER IF EXISTS trg_pest_cases_updated_at ON pest_cases;
-CREATE TRIGGER trg_pest_cases_updated_at
-BEFORE UPDATE ON pest_cases
-FOR EACH ROW
-EXECUTE FUNCTION set_updated_at();
-
-DROP TRIGGER IF EXISTS trg_pest_cases_location ON pest_cases;
-CREATE TRIGGER trg_pest_cases_location
-BEFORE INSERT OR UPDATE ON pest_cases
-FOR EACH ROW
-EXECUTE FUNCTION set_location_from_coordinates();
-
--- ============================================================
--- permits triggers
--- ============================================================
-
-DROP TRIGGER IF EXISTS trg_permits_updated_at ON permits;
-CREATE TRIGGER trg_permits_updated_at
-BEFORE UPDATE ON permits
-FOR EACH ROW
-EXECUTE FUNCTION set_updated_at();
-
-DROP TRIGGER IF EXISTS trg_permits_location ON permits;
-CREATE TRIGGER trg_permits_location
-BEFORE INSERT OR UPDATE ON permits
-FOR EACH ROW
-EXECUTE FUNCTION set_location_from_coordinates();
-
--- ============================================================
--- work_reports triggers
--- ============================================================
-
-DROP TRIGGER IF EXISTS trg_work_reports_updated_at ON work_reports;
-CREATE TRIGGER trg_work_reports_updated_at
-BEFORE UPDATE ON work_reports
-FOR EACH ROW
-EXECUTE FUNCTION set_updated_at();
-
-DROP TRIGGER IF EXISTS trg_work_reports_location ON work_reports;
-CREATE TRIGGER trg_work_reports_location
-BEFORE INSERT OR UPDATE ON work_reports
 FOR EACH ROW
 EXECUTE FUNCTION set_location_from_coordinates();
 

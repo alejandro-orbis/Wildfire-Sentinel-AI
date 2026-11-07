@@ -1,5 +1,5 @@
 {
-  "name": "AI Forest Assistant - 02 Alertas (Clima)",
+  "name": "Wildfire Sentinel AI - 02 Alertas (Clima)",
   "nodes": [
     {
       "parameters": {
@@ -12,7 +12,7 @@
           ]
         }
       },
-      "id": "REPLACE_NODE_ID_cada-4-horas",
+      "id": "0f43fd68-8de4-4432-b9cd-92a14946bba0",
       "name": "Cada 4 horas",
       "type": "n8n-nodes-base.scheduleTrigger",
       "typeVersion": 1,
@@ -23,9 +23,9 @@
     },
     {
       "parameters": {
-        "jsCode": "const weather = $input.first().json;\n\n// Extraer datos\nconst temp = weather.main?.temp || 0;\nconst humidity = weather.main?.humidity || 0;\nconst windSpeed = weather.wind?.speed * 3.6 || 0; // convertir m/s a km/h\nconst zoneName = weather.name || 'Zona Forestal';\nconst timestamp = new Date().toISOString();\n\n// Calcular riesgo\nlet riskScore = 0;\nlet riskLevel = 'BAJO';\n\n// Temperatura (>30°C = riesgo)\nif (temp > 35) riskScore += 40;\nelse if (temp > 30) riskScore += 30;\nelse if (temp > 25) riskScore += 15;\n\n// Humedad (<30% = riesgo)\nif (humidity < 20) riskScore += 40;\nelse if (humidity < 30) riskScore += 30;\nelse if (humidity < 40) riskScore += 15;\n\n// Viento (>30 km/h = riesgo)\nif (windSpeed > 50) riskScore += 30;\nelse if (windSpeed > 30) riskScore += 20;\nelse if (windSpeed > 20) riskScore += 10;\n\n// Determinar nivel\nif (riskScore >= 70) riskLevel = 'EXTREMO';\nelse if (riskScore >= 50) riskLevel = 'ALTO';\nelse if (riskScore >= 30) riskLevel = 'MODERADO';\nelse riskLevel = 'BAJO';\n\nconst requiresAlert = riskLevel === 'ALTO' || riskLevel === 'EXTREMO';\n\nreturn [{\n  json: {\n    temperature: temp,\n    humidity: humidity,\n    wind_speed: windSpeed,\n    zone_name: zoneName,\n\n    // ambos nombres\n    risk_level: riskLevel,\n    fire_risk: riskLevel,\n\n    risk_score: riskScore,\n    requires_alert: requiresAlert,\n    timestamp: timestamp,\n    full_data: 'SANITIZED_FOR_GITHUB'\n  }\n}];"
+        "jsCode": "const weather = $input.first().json;\n\n// Extraer datos\nconst temp = weather.main?.temp || 0;\nconst humidity = weather.main?.humidity || 0;\nconst windSpeed = weather.wind?.speed * 3.6 || 0; // convertir m/s a km/h\nconst zoneName = weather.name || 'Zona Forestal';\nconst timestamp = new Date().toISOString();\n\n// Calcular riesgo\nlet riskScore = 0;\nlet riskLevel = 'BAJO';\n\n// Temperatura (>30°C = riesgo)\nif (temp > 35) riskScore += 40;\nelse if (temp > 30) riskScore += 30;\nelse if (temp > 25) riskScore += 15;\n\n// Humedad (<30% = riesgo)\nif (humidity < 20) riskScore += 40;\nelse if (humidity < 30) riskScore += 30;\nelse if (humidity < 40) riskScore += 15;\n\n// Viento (>30 km/h = riesgo)\nif (windSpeed > 50) riskScore += 30;\nelse if (windSpeed > 30) riskScore += 20;\nelse if (windSpeed > 20) riskScore += 10;\n\n// Determinar nivel\nif (riskScore >= 70) riskLevel = 'EXTREMO';\nelse if (riskScore >= 50) riskLevel = 'ALTO';\nelse if (riskScore >= 30) riskLevel = 'MODERADO';\nelse riskLevel = 'BAJO';\n\nconst requiresAlert = riskLevel === 'ALTO' || riskLevel === 'EXTREMO';\n\nreturn [{\n  json: {\n    temperature: temp,\n    humidity: humidity,\n    wind_speed: windSpeed,\n    zone_name: zoneName,\n\n    // ambos nombres\n    risk_level: riskLevel,\n    fire_risk: riskLevel,\n\n    risk_score: riskScore,\n    requires_alert: requiresAlert,\n    timestamp: timestamp,\n    full_data: weather\n  }\n}];"
       },
-      "id": "REPLACE_NODE_ID_calcular-riesgo",
+      "id": "fc479a5c-b96b-4444-893b-19a37b8d24df",
       "name": "Calcular Riesgo",
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
@@ -59,7 +59,7 @@
         },
         "options": {}
       },
-      "id": "REPLACE_NODE_ID_riesgo-alto-o-extremo",
+      "id": "f33704ac-2759-4eec-a421-8727a773ad26",
       "name": "¿Riesgo Alto o Extremo?",
       "type": "n8n-nodes-base.if",
       "typeVersion": 2.2,
@@ -70,9 +70,9 @@
     },
     {
       "parameters": {
-        "jsCode": "const risk = $input.first().json;\n\nconst rawBrigadistas = $env.BRIGADISTAS_WHATSAPP || '[]';\n\nlet brigadistas;\ntry {\n  brigadistas = JSON.parse(rawBrigadistas);\n} catch (error) {\n  throw new Error('BRIGADISTAS_WHATSAPP no es JSON válido.');\n}\n\nif (!Array.isArray(brigadistas) || brigadistas.length === 0) {\n  throw new Error('No hay brigadistas configurados.');\n}\n\nconst riskEmoji = {\n  EXTREMO: '🔴🔴🔴',\n  ALTO: '🟠🟠'\n}[risk.risk_level] || '⚠️';\n\nconst mensaje = `${riskEmoji} *ALERTA FORESTAL* ${riskEmoji}\\n\\n` +\n  `📍 *Zona:* ${risk.zone_name || 'No especificada'}\\n` +\n  `🔥 *Riesgo:* ${risk.risk_level || 'No especificado'} (${risk.risk_score || 0} pts)\\n` +\n  `━━━━━━━━━━━━━━━━━━━━\\n` +\n  `🌡️ *Temperatura:* ${risk.temperature || 'N/D'}°C\\n` +\n  `💧 *Humedad:* ${risk.humidity || 'N/D'}%\\n` +\n  `💨 *Viento:* ${Math.round(Number(risk.wind_speed || 0))} km/h\\n` +\n  `━━━━━━━━━━━━━━━━━━━━\\n` +\n  `⚠️ *Recomendación:*\\n` +\n  `• Extremar precaución\\n` +\n  `• Prohibir quemas\\n` +\n  `• Activar vigilancia\\n\\n` +\n  `📅 ${risk.timestamp ? new Date(risk.timestamp).toLocaleString('es-ES') : new Date().toLocaleString('es-ES')}`;\n\nreturn brigadistas.map(telefono => ({\n  json: {\n    to: String(telefono).replace(/\\D/g, ''),\n    message: mensaje,\n    risk_data: risk\n  }\n}));"
+        "jsCode": "const risk = $input.first().json;\n\nconst rawBrigadistas = $env.BRIGADISTAS_WHATSAPP || '[]';\n\nlet brigadistas;\ntry {\n  brigadistas = JSON.parse(rawBrigadistas);\n} catch (error) {\n  throw new Error(`BRIGADISTAS_WHATSAPP no es JSON válido: ${rawBrigadistas}`);\n}\n\nif (!Array.isArray(brigadistas) || brigadistas.length === 0) {\n  throw new Error(`No hay brigadistas configurados. Valor recibido: ${rawBrigadistas}`);\n}\n\nconst riskEmoji = {\n  EXTREMO: '🔴🔴🔴',\n  ALTO: '🟠🟠'\n}[risk.risk_level] || '⚠️';\n\nconst mensaje = `${riskEmoji} *ALERTA FORESTAL* ${riskEmoji}\\n\\n` +\n  `📍 *Zona:* ${risk.zone_name || 'No especificada'}\\n` +\n  `🔥 *Riesgo:* ${risk.risk_level || 'No especificado'} (${risk.risk_score || 0} pts)\\n` +\n  `━━━━━━━━━━━━━━━━━━━━\\n` +\n  `🌡️ *Temperatura:* ${risk.temperature || 'N/D'}°C\\n` +\n  `💧 *Humedad:* ${risk.humidity || 'N/D'}%\\n` +\n  `💨 *Viento:* ${Math.round(Number(risk.wind_speed || 0))} km/h\\n` +\n  `━━━━━━━━━━━━━━━━━━━━\\n` +\n  `⚠️ *Recomendación:*\\n` +\n  `• Extremar precaución\\n` +\n  `• Prohibir quemas\\n` +\n  `• Activar vigilancia\\n\\n` +\n  `📅 ${risk.timestamp ? new Date(risk.timestamp).toLocaleString('es-ES') : new Date().toLocaleString('es-ES')}`;\n\nreturn brigadistas.map(telefono => ({\n  json: {\n    to: String(telefono).replace(/\\D/g, ''),\n    message: mensaje,\n    risk_data: risk\n  }\n}));"
       },
-      "id": "REPLACE_NODE_ID_preparar-mensajes-brigadistas",
+      "id": "7bf7544f-c25b-467b-8636-327d41c53ab5",
       "name": "Preparar Mensajes Brigadistas",
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
@@ -105,7 +105,7 @@
           "timeout": 30000
         }
       },
-      "id": "REPLACE_NODE_ID_enviar-whatsapp-brigadistas",
+      "id": "b0892011-1b04-41de-be0f-de5695340923",
       "name": "Enviar WhatsApp Brigadistas",
       "type": "n8n-nodes-base.httpRequest",
       "typeVersion": 4.2,
@@ -125,7 +125,7 @@
           "__rl": true,
           "value": "fire_alerts",
           "mode": "list",
-          "cachedResultName": "REPLACE_WITH_CACHED_RESULT"
+          "cachedResultName": "fire_alerts"
         },
         "columns": {
           "mappingMode": "defineBelow",
@@ -229,7 +229,7 @@
         },
         "options": {}
       },
-      "id": "REPLACE_NODE_ID_insertar-en-fire-alerts",
+      "id": "3000a269-a73b-4dec-a051-f802273f0f80",
       "name": "Insertar en fire_alerts",
       "type": "n8n-nodes-base.postgres",
       "typeVersion": 2.6,
@@ -239,22 +239,10 @@
       ],
       "credentials": {
         "postgres": {
-          "name": "REPLACE_WITH_POSTGRES_CREDENTIAL"
+          "id": "",
+          "name": "Postgres - Wildfire Sentinel"
         }
       }
-    },
-    {
-      "parameters": {
-        "jsCode": "const input = $input.first().json;\n\n// Guardar en fire_alerts\nconst alertRecord = {\n  table: 'fire_alerts',\n  payload: {\n    zone_name: input.zone_name,\n    temperature: input.temperature,\n    humidity: input.humidity,\n    wind_speed: input.wind_speed,\n    fire_risk: input.risk_level,\n    alert_sent: input.requires_alert || false,\n    requires_alert: input.requires_alert || false,\n    metadata: {\n      risk_score: input.risk_score,\n      raw_data: 'SANITIZED_FOR_GITHUB',\n      triggered_at: input.timestamp\n    }\n  }\n};\n\nreturn [{ json: alertRecord }];"
-      },
-      "id": "REPLACE_NODE_ID_guardar-en-postgresql1",
-      "name": "Guardar en PostgreSQL1",
-      "type": "n8n-nodes-base.code",
-      "typeVersion": 2,
-      "position": [
-        -672,
-        128
-      ]
     },
     {
       "parameters": {
@@ -269,11 +257,12 @@
         -1104,
         128
       ],
-      "id": "REPLACE_NODE_ID_consultar-openweathermap",
+      "id": "5142c033-0dd7-4833-964b-0bbe6821eb9d",
       "name": "Consultar OpenWeatherMap",
       "credentials": {
         "openWeatherMapApi": {
-          "name": "REPLACE_WITH_OPENWEATHERMAPAPI_CREDENTIAL"
+          "id": "",
+          "name": "OpenWeatherMap account"
         }
       }
     },
@@ -285,8 +274,21 @@
         -16,
         224
       ],
-      "id": "REPLACE_NODE_ID_fin",
+      "id": "708bd49f-66f5-4239-8eff-6d8c417d8c28",
       "name": "FIN"
+    },
+    {
+      "parameters": {
+        "jsCode": "const input = $input.first().json;\n\n// Guardar en fire_alerts\nconst alertRecord = {\n  table: 'fire_alerts',\n  payload: {\n    zone_name: input.zone_name,\n    temperature: input.temperature,\n    humidity: input.humidity,\n    wind_speed: input.wind_speed,\n    fire_risk: input.risk_level,\n    alert_sent: input.requires_alert || false,\n    requires_alert: input.requires_alert || false,\n    metadata: {\n      risk_score: input.risk_score,\n      raw_data: input.full_data,\n      triggered_at: input.timestamp\n    }\n  }\n};\n\nreturn [{ json: alertRecord }];"
+      },
+      "id": "68bbc857-fffe-40d2-a55b-c09a77ad1f17",
+      "name": "Guardar en PostgreSQL",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -672,
+        128
+      ]
     }
   ],
   "pinData": {},
@@ -306,7 +308,7 @@
       "main": [
         [
           {
-            "node": "Guardar en PostgreSQL1",
+            "node": "Guardar en PostgreSQL",
             "type": "main",
             "index": 0
           }
@@ -353,22 +355,22 @@
         ]
       ]
     },
-    "Guardar en PostgreSQL1": {
+    "Consultar OpenWeatherMap": {
       "main": [
         [
           {
-            "node": "Insertar en fire_alerts",
+            "node": "Calcular Riesgo",
             "type": "main",
             "index": 0
           }
         ]
       ]
     },
-    "Consultar OpenWeatherMap": {
+    "Guardar en PostgreSQL": {
       "main": [
         [
           {
-            "node": "Calcular Riesgo",
+            "node": "Insertar en fire_alerts",
             "type": "main",
             "index": 0
           }
