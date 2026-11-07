@@ -212,6 +212,10 @@ Estados de un caso en `forest_incidents.status`:
 |---|---|
 | ![Architecture](assets/screenshots/workflow_architecture_overview.png) | ![Core Workflow](assets/screenshots/core_workflow_engine.png) |
 
+| Foto analizada con Gemini Vision | Caso completado con la ubicación |
+|---|---|
+| <img src="assets/screenshots/gemini_vision_whatsapp.png" alt="Gemini Vision" width="320"> | <img src="assets/screenshots/gemini_vision_case_updated.png" alt="Case updated" width="320"> |
+
 | Routing IA | Alerta de incendio |
 |---|---|
 | ![Incident Routing](assets/screenshots/incident_routing_zoom.png) | ![Wildfire Alert](assets/screenshots/wildfire_incident_alert.png) |

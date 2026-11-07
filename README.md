@@ -212,6 +212,10 @@ See [docs/database.md](docs/database.md) for the full schema.
 |---|---|
 | ![Architecture](assets/screenshots/workflow_architecture_overview.png) | ![Core Workflow](assets/screenshots/core_workflow_engine.png) |
 
+| Photo analysed with Gemini Vision | Case completed with the location |
+|---|---|
+| <img src="assets/screenshots/gemini_vision_whatsapp.png" alt="Gemini Vision" width="320"> | <img src="assets/screenshots/gemini_vision_case_updated.png" alt="Case updated" width="320"> |
+
 | AI routing | Wildfire alert |
 |---|---|
 | ![Incident Routing](assets/screenshots/incident_routing_zoom.png) | ![Wildfire Alert](assets/screenshots/wildfire_incident_alert.png) |
