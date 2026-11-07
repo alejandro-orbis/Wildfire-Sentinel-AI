@@ -17,6 +17,7 @@
 
 ### Added
 
+- GET webhook on the same path to answer Meta's webhook verification (`hub.challenge`), checking `META_VERIFY_TOKEN`.
 - `tests/code-nodes.test.js`: tests for the Code nodes with decision logic (`node tests/code-nodes.test.js`).
 
 ## [2.0.0] - 2026-11-07

@@ -293,6 +293,10 @@ En el nodo de Google Sheets, selecciona tu propia hoja de cálculo.
 | Verify Token | El valor de `META_VERIFY_TOKEN` |
 | Campo suscrito | `messages` |
 
+El workflow Core incluye un webhook `GET` en la misma ruta que responde a la verificación de Meta (`hub.challenge`) solo si `hub.verify_token` coincide con `META_VERIFY_TOKEN`. Actívalo antes de pulsar **Verificar y guardar**.
+
+> Mientras la app de Meta no esté publicada, Meta solo entrega al webhook los eventos de prueba enviados desde el panel. Para recibir mensajes reales hay que publicar la app.
+
 ---
 
 ## 🔐 Variables de entorno

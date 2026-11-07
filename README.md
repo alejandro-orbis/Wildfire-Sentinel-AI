@@ -293,6 +293,10 @@ In the Google Sheets node, select your own spreadsheet and sheet.
 | Verify Token | The value of `META_VERIFY_TOKEN` |
 | Subscribed field | `messages` |
 
+The Core workflow includes a `GET` webhook on the same path that answers Meta's verification (`hub.challenge`) only when `hub.verify_token` matches `META_VERIFY_TOKEN`. Activate it before clicking **Verify and save**.
+
+> While the Meta app is unpublished, Meta only delivers test events sent from the dashboard to the webhook. Publish the app to receive real messages.
+
 ---
 
 ## 🔐 Environment variables

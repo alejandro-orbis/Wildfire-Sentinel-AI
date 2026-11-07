@@ -1249,6 +1249,90 @@
       ],
       "id": "4e5ca273-2b23-4821-b4b6-aaf3583387d7",
       "name": "Preparar Recordatorio Ubicación"
+    },
+    {
+      "parameters": {
+        "path": "omnichannel-webhook",
+        "responseMode": "responseNode",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2,
+      "position": [
+        -7824,
+        4128
+      ],
+      "id": "a13e9c1e-35da-4023-8aea-5a5c68b9985c",
+      "name": "Webhook Verificación Meta (GET)",
+      "webhookId": "03722d27-012c-49bc-9bfe-d33aee326079"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 3
+          },
+          "conditions": [
+            {
+              "id": "083f6e50-c9ca-43e8-890a-de6b920316d3",
+              "leftValue": "={{ $json.query['hub.mode'] === 'subscribe' && !!$env.META_VERIFY_TOKEN && $json.query['hub.verify_token'] === $env.META_VERIFY_TOKEN }}",
+              "rightValue": "",
+              "operator": {
+                "type": "boolean",
+                "operation": "true",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.3,
+      "position": [
+        -7600,
+        4128
+      ],
+      "id": "1d00b42f-a0b4-4490-882d-4f21c514e89e",
+      "name": "IF ¿Token de verificación válido?"
+    },
+    {
+      "parameters": {
+        "respondWith": "text",
+        "responseBody": "={{ $json.query['hub.challenge'] }}",
+        "options": {
+          "responseCode": 200
+        }
+      },
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.1,
+      "position": [
+        -7376,
+        4048
+      ],
+      "id": "f42d58e4-526f-44c5-a34b-71061e1dd820",
+      "name": "Responder challenge"
+    },
+    {
+      "parameters": {
+        "respondWith": "text",
+        "responseBody": "Forbidden",
+        "options": {
+          "responseCode": 403
+        }
+      },
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.1,
+      "position": [
+        -7376,
+        4208
+      ],
+      "id": "956fac58-c99c-4710-aaa1-9062570ba4be",
+      "name": "Responder 403"
     }
   ],
   "pinData": {},
@@ -1834,6 +1918,35 @@
         [
           {
             "node": "Enviar WhatsApp Usuario",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Webhook Verificación Meta (GET)": {
+      "main": [
+        [
+          {
+            "node": "IF ¿Token de verificación válido?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "IF ¿Token de verificación válido?": {
+      "main": [
+        [
+          {
+            "node": "Responder challenge",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Responder 403",
             "type": "main",
             "index": 0
           }
