@@ -15,6 +15,7 @@ Anyone can report smoke or fire over WhatsApp with a text, a photo or their loca
 [![OpenWeatherMap](https://img.shields.io/badge/OpenWeatherMap-API-FC4C02?style=flat-square)](https://openweathermap.org/api)
 [![License: MIT](https://img.shields.io/badge/License-MIT-22c55e?style=flat-square)](LICENSE)
 [![Status](https://img.shields.io/badge/Status-Pilot_Ready-22c55e?style=flat-square)](https://github.com/alejandro-orbis)
+[![CI](https://github.com/alejandro-orbis/Wildfire-Sentinel-AI/actions/workflows/ci.yml/badge.svg)](https://github.com/alejandro-orbis/Wildfire-Sentinel-AI/actions/workflows/ci.yml)
 
 ---
 
