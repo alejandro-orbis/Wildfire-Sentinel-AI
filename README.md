@@ -113,11 +113,16 @@ Gemini classifies every message and returns JSON with type, subtype, priority, d
 | `subtipo` | `HUMO`, `FUEGO`, `RAYO`, `COLILLA`, `QUEMA_ILEGAL`, `BARBACOA`, `MAQUINARIA`, `LINEA_ELECTRICA`, `FOCO_TERMICO`, `OTRO_RIESGO` |
 | `prioridad` | `ALTA`, `MEDIA`, `BAJA` |
 
-There are guardrails outside the AI: greetings and casual messages never create a case, and loose coordinates without a pending report don't either.
+There are guardrails outside the AI:
+
+- Greetings and casual messages never create a case, and loose coordinates without a pending report don't either.
+- **If Gemini doesn't respond**, the report isn't lost: if the message contains fire words (smoke, flames, burning…), an `INCENDIO` case with `MEDIA` priority is created, tagged *[Clasificado sin IA]*, and escalated to the supervisor. Otherwise the bot asks for more detail and reminds the user of 112.
+- A case waiting for a location expires after 30 minutes (`PENDING_STATE_TTL_MINUTES`), and replies like "ok, thanks" are not treated as a place name.
+- Images also go through the rate limiter, and a photo sent while a location is pending doesn't open a new case: the bot reminds the user that the location is still missing.
 
 ### Image
 
-Photos are downloaded from the Meta API and sent to Gemini Vision, which estimates whether there is smoke or fire, the size of the fire and whether houses or roads are nearby. Priority is raised to `ALTA` when fire is visible, houses are nearby or the fire is large.
+Photos are downloaded from the Meta API and sent to Gemini Vision, which estimates whether there is smoke or fire, the size of the fire and whether houses or roads are nearby. Priority is raised to `ALTA` when fire is visible, houses are nearby or the fire is large. If Gemini Vision reports no smoke and no fire, no case is created. If Vision fails, the image is treated as a possible fire with `MEDIA` priority and escalated.
 
 ### Supervisor escalation
 
@@ -142,7 +147,7 @@ The alerts workflow queries OpenWeatherMap every 4 hours and adds points for thr
 | ≥ 30 | `MODERADO` |
 | < 30 | `BAJO` |
 
-Every reading is stored in `fire_alerts`. At `ALTO` or `EXTREMO` level, a WhatsApp alert is sent to each configured crew member.
+Every reading is stored in `fire_alerts`. At `ALTO` or `EXTREMO` level, a WhatsApp alert is sent to each configured crew member, with a **cooldown** so the same alert isn't repeated every 4 hours: crews are only alerted on the first alert for the zone, when the level rises above the last alert sent, or after `ALERT_COOLDOWN_HOURS` (12 by default).
 
 > The monitored zone is set by the coordinates in the **Consultar OpenWeatherMap** node. Change them to your area.
 
@@ -183,6 +188,8 @@ Wildfire-Sentinel-AI/
 │   └── indexes.sql
 ├── docs/
 │   └── database.md
+├── tests/
+│   └── code-nodes.test.js
 └── assets/
     └── screenshots/
 ```
@@ -203,6 +210,16 @@ Case states in `forest_incidents.status`:
 - `ABIERTO`: has a location, ready for follow-up.
 
 See [docs/database.md](docs/database.md) for the full schema.
+
+---
+
+## 🧪 Tests
+
+The Code nodes with decision logic have tests that run their code with simulated inputs (no n8n or APIs needed):
+
+```bash
+node tests/code-nodes.test.js
+```
 
 ---
 
@@ -276,6 +293,10 @@ In the Google Sheets node, select your own spreadsheet and sheet.
 | Verify Token | The value of `META_VERIFY_TOKEN` |
 | Subscribed field | `messages` |
 
+The Core workflow includes a `GET` webhook on the same path that answers Meta's verification (`hub.challenge`) only when `hub.verify_token` matches `META_VERIFY_TOKEN`. Activate it before clicking **Verify and save**.
+
+> While the Meta app is unpublished, Meta only delivers test events sent from the dashboard to the webhook. Publish the app to receive real messages.
+
 ---
 
 ## 🔐 Environment variables
@@ -291,6 +312,8 @@ SUPERVISOR_WHATSAPP=
 SUPERVISOR_EMAIL=
 BRIGADISTAS_WHATSAPP=["34600000000","34600000001"]
 RATE_LIMIT_PER_MINUTE=15
+PENDING_STATE_TTL_MINUTES=30
+ALERT_COOLDOWN_HOURS=12
 ```
 
 - `N8N_BLOCK_ENV_ACCESS_IN_NODE=false` is required so the nodes can read `$env`.

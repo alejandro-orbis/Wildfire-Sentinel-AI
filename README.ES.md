@@ -113,11 +113,16 @@ Gemini clasifica cada mensaje y devuelve un JSON con tipo, subtipo, prioridad, d
 | `subtipo` | `HUMO`, `FUEGO`, `RAYO`, `COLILLA`, `QUEMA_ILEGAL`, `BARBACOA`, `MAQUINARIA`, `LINEA_ELECTRICA`, `FOCO_TERMICO`, `OTRO_RIESGO` |
 | `prioridad` | `ALTA`, `MEDIA`, `BAJA` |
 
-Hay salvaguardas fuera de la IA: los saludos y mensajes casuales nunca crean caso, y unas coordenadas sueltas sin aviso pendiente tampoco.
+Hay salvaguardas fuera de la IA:
+
+- Los saludos y mensajes casuales nunca crean caso, y unas coordenadas sueltas sin aviso pendiente tampoco.
+- **Si Gemini no responde**, el aviso no se pierde: si el mensaje contiene palabras de fuego (humo, llamas, quemado…), se crea un caso `INCENDIO` de prioridad `MEDIA` marcado como *[Clasificado sin IA]* y se escala al supervisor. Si no, se pide más detalle y se recuerda el 112.
+- Un caso esperando ubicación caduca a los 30 minutos (`PENDING_STATE_TTL_MINUTES`), y respuestas como "vale, gracias" no se interpretan como un lugar.
+- Las imágenes pasan también por el rate limiter, y una foto enviada mientras se espera la ubicación no abre un caso nuevo: el bot recuerda que falta la ubicación.
 
 ### Imagen
 
-Las fotos se descargan de la API de Meta y se envían a Gemini Vision, que estima si hay humo o fuego, el tamaño del incendio y si hay viviendas o carreteras cerca. La prioridad pasa a `ALTA` si hay fuego visible, viviendas cerca o un incendio grande.
+Las fotos se descargan de la API de Meta y se envían a Gemini Vision, que estima si hay humo o fuego, el tamaño del incendio y si hay viviendas o carreteras cerca. La prioridad pasa a `ALTA` si hay fuego visible, viviendas cerca o un incendio grande. Si Gemini Vision indica que no hay humo ni fuego, no se crea caso. Si Vision falla, la imagen se trata como posible incendio de prioridad `MEDIA` y se escala.
 
 ### Escalado al supervisor
 
@@ -142,7 +147,7 @@ El workflow de alertas consulta OpenWeatherMap cada 4 horas y suma puntos según
 | ≥ 30 | `MODERADO` |
 | < 30 | `BAJO` |
 
-Todas las lecturas se guardan en `fire_alerts`. Con nivel `ALTO` o `EXTREMO` se envía una alerta por WhatsApp a cada brigadista configurado.
+Todas las lecturas se guardan en `fire_alerts`. Con nivel `ALTO` o `EXTREMO` se envía una alerta por WhatsApp a cada brigadista configurado, con un **cooldown** para no repetir el mismo aviso cada 4 horas: solo se avisa si es la primera alerta de la zona, si el nivel sube respecto a la última alerta enviada o si han pasado `ALERT_COOLDOWN_HOURS` (12 por defecto).
 
 > La zona monitorizada se define con las coordenadas del nodo **Consultar OpenWeatherMap**. Cámbialas por las de tu zona.
 
@@ -183,6 +188,8 @@ Wildfire-Sentinel-AI/
 │   └── indexes.sql
 ├── docs/
 │   └── database.md
+├── tests/
+│   └── code-nodes.test.js
 └── assets/
     └── screenshots/
 ```
@@ -203,6 +210,16 @@ Estados de un caso en `forest_incidents.status`:
 
 - `PENDIENTE_UBICACION`: registrado, esperando la ubicación del usuario.
 - `ABIERTO`: con ubicación, listo para seguimiento.
+
+---
+
+## 🧪 Tests
+
+Los nodos Code con lógica de decisión tienen tests que ejecutan su código con entradas simuladas (sin n8n ni APIs):
+
+```bash
+node tests/code-nodes.test.js
+```
 
 ---
 
@@ -276,6 +293,10 @@ En el nodo de Google Sheets, selecciona tu propia hoja de cálculo.
 | Verify Token | El valor de `META_VERIFY_TOKEN` |
 | Campo suscrito | `messages` |
 
+El workflow Core incluye un webhook `GET` en la misma ruta que responde a la verificación de Meta (`hub.challenge`) solo si `hub.verify_token` coincide con `META_VERIFY_TOKEN`. Actívalo antes de pulsar **Verificar y guardar**.
+
+> Mientras la app de Meta no esté publicada, Meta solo entrega al webhook los eventos de prueba enviados desde el panel. Para recibir mensajes reales hay que publicar la app.
+
 ---
 
 ## 🔐 Variables de entorno
@@ -291,6 +312,8 @@ SUPERVISOR_WHATSAPP=
 SUPERVISOR_EMAIL=
 BRIGADISTAS_WHATSAPP=["34600000000","34600000001"]
 RATE_LIMIT_PER_MINUTE=15
+PENDING_STATE_TTL_MINUTES=30
+ALERT_COOLDOWN_HOURS=12
 ```
 
 - `N8N_BLOCK_ENV_ACCESS_IN_NODE=false` es necesario para que los nodos puedan leer `$env`.
